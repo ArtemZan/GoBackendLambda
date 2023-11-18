@@ -15,7 +15,7 @@ jobs:
     - name: yarn install
       run: yarn install
     - name: tsc
-      uses: icrawl/action-tsc@v3
+      uses: icrawl/action-tsc@v1
   get-lambda-files-names:
     runs-on: ubuntu-latest
     outputs:
