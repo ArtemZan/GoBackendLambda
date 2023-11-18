@@ -28,6 +28,7 @@ jobs:
         id: getLambdas
         run: |
           lambdas=$(tree -J | jq '.[0].contents | map(select(.name == "build" and .type == "directory")) | .[0].contents | try map(select(.name == "functions" and .type == "directory")) catch [] | .[0].contents | try map(.name | select(endswith(".js")) | .[:-3]) catch []')
+          echo ${lambdas}
           echo ::set-output name=lambdas::${lambdas}
   lambdas:
     runs-on: ubuntu-latest
