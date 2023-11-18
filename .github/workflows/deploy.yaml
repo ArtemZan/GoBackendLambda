@@ -68,5 +68,5 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-north-1
-      - run: zip -j ${{matrix.lambda}}.zip ./src/functions/${{matrix.lambda}}.js
+      - run: zip -j ${{matrix.lambda}}.zip ./build/functions/${{matrix.lambda}}.js
       - run: aws lambda update-function-code --function-name=${{matrix.lambda}} --zip-file=fileb://${{matrix.lambda}}.zip
