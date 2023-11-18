@@ -13,8 +13,8 @@ jobs:
       uses: actions/setup-node@v3
       with:
         node-version: 16
-    # - name: install dependencies
-    #   run: npm install
+    - name: install dependencies
+      run: npm install
     - name: tsc
       run: tsc
     - name: Upload the build folder
