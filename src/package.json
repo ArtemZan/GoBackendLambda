@@ -15,7 +15,7 @@
     "url": "https://github.com/ArtemZan/GoBackendLambda/issues"
   },
   "homepage": "https://github.com/ArtemZan/GoBackendLambda#readme",
-  "devDependencies": {
-    "@types/aws-lambda": "^8.10.126"
+  "dependencies": {
+    "jquery": "^3.7.1"
   }
 }
