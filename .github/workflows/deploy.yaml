@@ -7,7 +7,8 @@ jobs:
     name: tsc
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout repository
+      uses: actions/checkout@v3
     - name: install node v16
       uses: actions/setup-node@v3
       with:
@@ -26,8 +27,6 @@ jobs:
     outputs:
       lambdaArray: ${{ steps.getLambdas.outputs.lambdas }}
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
       - name: Get functions filenames
         id: getLambdas
         run: |
@@ -35,7 +34,9 @@ jobs:
           echo ${lambdas}
           echo ::set-output name=lambdas::${lambdas}
       - name: log
-        run: tree -J | jq '.[0].contents | map(select(.name == "build" and .type == "directory")) | .[0].contents | try map(select(.name == "functions" and .type == "directory")) catch [] | .[0].contents | try map(.name | select(endswith(".js")) | .[:-3]) catch []'
+        run: |
+         tree 
+         tree -J | jq '.[0].contents | map(select(.name == "build" and .type == "directory")) | .[0].contents | try map(select(.name == "functions" and .type == "directory")) catch [] | .[0].contents | try map(.name | select(endswith(".js")) | .[:-3]) catch []'
   lambdas:
     runs-on: ubuntu-latest
     needs: get-lambda-files-names
