@@ -17,6 +17,11 @@ jobs:
       run: npm install
     - name: tsc
       run: tsc
+    - name: Upload the build folder
+      uses: actions/upload-artifact@master
+      with:
+        name: build-artifact
+        path: build
     - name: log
       run: |
        tree
@@ -27,6 +32,11 @@ jobs:
     outputs:
       lambdaArray: ${{ steps.getLambdas.outputs.lambdas }}
     steps:
+      - name: Download the build folder
+        uses: actions/download-artifact@master
+        with:
+          name: build-artifact
+          path: build
       - name: Get functions filenames
         id: getLambdas
         run: |
@@ -48,6 +58,11 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 16
+      - name: Download the build folder
+        uses: actions/download-artifact@master
+        with:
+          name: build-artifact
+          path: build
       - uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
