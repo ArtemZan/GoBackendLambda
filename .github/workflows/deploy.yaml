@@ -4,7 +4,7 @@ on:
       - main
 jobs:
   tsc:
-    name: tsc
+    name: Compile typescript
     runs-on: ubuntu-latest
     steps:
     - name: Checkout repository
@@ -89,7 +89,10 @@ jobs:
         with:
           node-version: 16
       - name: Install the dependencies
-        run: npm i
+        run: |
+          cd ./src
+          npm i
+          cd ..
       - name: Zip the packages
         run: |
           cd ./src
