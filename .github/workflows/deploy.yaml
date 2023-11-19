@@ -88,6 +88,8 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+      - name: Install the dependencies
+        run: npm i
       - name: Zip the packages
         run: |
           cd ./src
