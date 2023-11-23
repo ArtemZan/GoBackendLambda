@@ -25,12 +25,14 @@ const db = DynamoDBDocumentClient.from(client);
 
 const enum ERROR_CODE {
     EMAIL_TAKEN = "EMAIL_TAKEN",
-    SEND_EMAIL_FAILED = "SEND_EMAIL_FAILED"
+    SEND_EMAIL_FAILED = "SEND_EMAIL_FAILED",
+    ADD_USER_FAILED = "ADD_USER_FAILED"
 }
 
 const errorMessage: { [key in ERROR_CODE]: string } = {
     EMAIL_TAKEN: "This email is already taken",
-    SEND_EMAIL_FAILED: "Failed to send email"
+    SEND_EMAIL_FAILED: "Failed to send email",
+    ADD_USER_FAILED: "Failed to add user"
 }
 
 function getBodyFromErrorCode(code: ERROR_CODE) {
@@ -64,7 +66,13 @@ export async function handler(event: APIGatewayEvent) {
         return getResponseFromErrorCode(ERROR_CODE.SEND_EMAIL_FAILED)
     }
 
-    addUser(body)
+    try {
+        await addUser(body)
+    }
+    catch(e){
+        console.log(e)
+        return getResponseFromErrorCode(ERROR_CODE.SEND_EMAIL_FAILED)
+    }
 }
 
 async function checkIsEmailUsed(email: string) {
@@ -143,7 +151,7 @@ async function sendValidationEmail(email: string) {
                             Verify
                     </a>
                 </div>
-            </div
+            </div>
         `
     }
 
@@ -174,4 +182,8 @@ async function addUser(user: SignUpBody) {
             isEmailVerified: false
         }
     }))
+
+    console.log(response)
+
+    return response
 }
