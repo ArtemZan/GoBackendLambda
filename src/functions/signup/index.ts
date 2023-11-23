@@ -12,6 +12,7 @@ import { SignUpBody } from '../../types';
 import nodemailer from "nodemailer"
 import crypto from "crypto"
 import sha256 from "sha256"
+import {v4 as UUID} from "uuid"
 
 // Temporary solution
 process.env = process.env || {}
@@ -89,30 +90,8 @@ async function checkIsEmailUsed(email: string) {
     return !!users?.length
 }
 
-async function generateCode() {
-    let isCodeUsed = false
-    let code = null
-
-    do {
-        code = crypto.randomBytes(8).toString("base64url")
-        console.log("Generated code: ", code)
-
-        const response = await db.send(new GetCommand({
-            TableName: "emailCodes",
-            Key: {
-                code
-            }
-        }))
-
-        isCodeUsed = !!response.Item
-    }
-    while (isCodeUsed);
-
-    return code
-}
-
 async function sendValidationEmail(email: string) {
-    const code = await generateCode()
+    const code = UUID()
 
     await db.send(new PutCommand({
         TableName: "emailCodes",
@@ -176,6 +155,7 @@ async function addUser(user: SignUpBody) {
     const response = await db.send(new PutCommand({
         TableName: "users",
         Item: {
+            id: UUID(),
             name: user.name,
             email: user.email,
             password: encodedPassword,

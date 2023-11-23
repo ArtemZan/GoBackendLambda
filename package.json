@@ -19,7 +19,8 @@
     "@types/aws-lambda": "^8.10.126",
     "@types/node": "^20.9.4",
     "@types/nodemailer": "^6.4.14",
-    "@types/sha256": "^0.2.2"
+    "@types/sha256": "^0.2.2",
+    "@types/uuid": "^9.0.7"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.454.0",
