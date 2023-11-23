@@ -65,23 +65,20 @@ export async function handler(event: APIGatewayEvent) {
     }
 
     addUser(body)
-
-    return JSON.stringify({
-        data: "lalala1"
-    })
 }
 
 async function checkIsEmailUsed(email: string) {
-    const response = await db.send(new GetCommand({
+    const response = await db.send(new ScanCommand({
         TableName: "users",
-        Key: {
-            email
+        FilterExpression: "email = :email",
+        ExpressionAttributeValues: {
+            ":email": email
         }
     }))
 
-    const user = response.Item
+    const users = response.Items
 
-    return !!user
+    return !!users?.length
 }
 
 async function generateCode() {
@@ -135,13 +132,18 @@ async function sendValidationEmail(email: string) {
         to: email,
         subject: "GO.com - verify your email",
         html: `
-            <h1>Verify your email</h1>
-            Click the button below
-            <a 
-                href="${process.env.VERIFY_EMAIL_URL}?code=${code}" 
-                style="background-color: #ca8; padding: 10px; color: white; border: 1px solid #555; border-radius: 10px">
-                    Verify
-            </a>
+            <div style="display: flex; justify-content: center">
+                <div style="max-width: 400px; width: 100%;">
+                    <h1 style="text-align: center">Verify your email</h1>
+                    Click the button below
+                    <br>
+                    <a 
+                        href="${process.env.VERIFY_EMAIL_URL}?code=${code}" 
+                        style="background-color: #ca8; padding: 10px; color: white; border: 1px solid #555; border-radius: 10px; display: inline-block">
+                            Verify
+                    </a>
+                </div>
+            </div
         `
     }
 
@@ -166,9 +168,9 @@ async function addUser(user: SignUpBody) {
     const response = await db.send(new PutCommand({
         TableName: "users",
         Item: {
-            name: user.name, 
-            email: user.email, 
-            password: encodedPassword, 
+            name: user.name,
+            email: user.email,
+            password: encodedPassword,
             isEmailVerified: false
         }
     }))
