@@ -16,5 +16,7 @@
   },
   "homepage": "https://github.com/ArtemZan/GoBackendLambda#readme",
   "dependencies": {
+    "nodemailer": "^6.9.7",
+    "sha256": "^0.2.0"
   }
 }
