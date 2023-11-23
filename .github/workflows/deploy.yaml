@@ -75,6 +75,7 @@ jobs:
   layer:
     name: Upload packages to AWS layer
     runs-on: ubuntu-latest
+    continue-on-error: true
     needs: tsc
     steps:
       - name: Checkout
@@ -99,6 +100,9 @@ jobs:
           cd ./src
           zip -r ../layer.zip ./node_modules
           cd ..
+      - name: No packages found
+        if: ${{failure()}}
+        run: echo "No packages found"
       - name: log
         run: tree -L 2
       - name: Upload the zip file to AWS layer

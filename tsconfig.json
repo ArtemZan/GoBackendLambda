@@ -3,7 +3,7 @@
         "outDir": "build",
         "rootDir": "src",
         "target": "ES2015",
-        "moduleResolution": "NodeNext",
-        "module": "NodeNext"
+        "moduleResolution": "Node16",
+        "module": "Node16"
     }
 }
