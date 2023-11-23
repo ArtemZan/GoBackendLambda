@@ -97,6 +97,7 @@ jobs:
       - name: Move 'node_modules' to 'nodejs' folder
         run: |
           mkdir nodejs
+          tree -L 2
           mv node_modules ./nodejs
       - name: Zip the packages
         run: |
