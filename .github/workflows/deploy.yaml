@@ -94,6 +94,10 @@ jobs:
         run: |
           cd ./src
           npm i
+      - name: Move 'utils' to 'node_modules'
+        run: |
+          cd ./src
+          mv utils ./node_modules
       - name: Move 'node_modules' to 'nodejs' folder
         run: |
           cd ./src
