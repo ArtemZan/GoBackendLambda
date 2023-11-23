@@ -94,11 +94,13 @@ jobs:
         run: |
           cd ./src
           npm i
-          cd ..
+      - name: Move 'node_modules' to 'nodejs' folder
+        run: |
+          mkdir nodejs
+          mv node_modules ./nodejs
       - name: Zip the packages
         run: |
-          cd ./src
-          zip -r ../layer.zip ./node_modules
+          zip -r ../layer.zip ./nodejs
           cd ..
       - name: No packages found
         if: ${{failure()}}
