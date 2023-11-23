@@ -16,8 +16,16 @@
   },
   "homepage": "https://github.com/ArtemZan/GoBackendLambda#readme",
   "devDependencies": {
-    "@types/aws-lambda": "^8.10.126"
+    "@types/aws-lambda": "^8.10.126",
+    "@types/node": "^20.9.4",
+    "@types/nodemailer": "^6.4.14",
+    "@types/sha256": "^0.2.2"
   },
   "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.454.0",
+    "@aws-sdk/lib-dynamodb": "^3.454.0",
+    "node": "^21.2.0",
+    "nodemailer": "^6.9.7",
+    "sha256": "^0.2.0"
   }
 }

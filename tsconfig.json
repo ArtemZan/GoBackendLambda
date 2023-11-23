@@ -1,6 +1,9 @@
 {
     "compilerOptions": {
         "outDir": "build",
-        "rootDir": "src"
+        "rootDir": "src",
+        "target": "ES2015",
+        "moduleResolution": "NodeNext",
+        "module": "NodeNext"
     }
 }

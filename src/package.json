@@ -16,6 +16,5 @@
   },
   "homepage": "https://github.com/ArtemZan/GoBackendLambda#readme",
   "dependencies": {
-    "jquery": "^3.7.1"
   }
 }
