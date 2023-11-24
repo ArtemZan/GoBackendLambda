@@ -94,6 +94,11 @@ jobs:
         run: |
           cd ./src
           npm i
+      - name: Download the build folder
+        uses: actions/download-artifact@master
+        with:
+          name: build-artifact
+          path: build
       - name: Move 'utils' to 'node_modules'
         run: |
           mv build/utils ./src/node_modules
