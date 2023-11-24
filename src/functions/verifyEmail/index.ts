@@ -66,7 +66,10 @@ export async function handler(event: APIGatewayEvent){
             Key: {
                 id: user.id
             },
-            UpdateExpression: "set isEmailVerified = true"
+            UpdateExpression: "set isEmailVerified = :isEmailVerified",
+            ExpressionAttributeValues: {
+                ":isEmailVerified": true
+            }
         }))
     }
     catch(e){
