@@ -16,8 +16,12 @@
   },
   "homepage": "https://github.com/ArtemZan/GoBackendLambda#readme",
   "dependencies": {
+    "jsonwebtoken": "^9.0.2",
     "nodemailer": "^6.9.7",
     "sha256": "^0.2.0",
     "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.5"
   }
 }

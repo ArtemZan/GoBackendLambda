@@ -10,7 +10,8 @@ enum ERROR_CODE_500 {
 enum ERROR_CODE_400 {
     EMAIL_TAKEN = "EMAIL_TAKEN",
     ADD_USER_FAILED = "ADD_USER_FAILED",
-    WRONG_CODE = "WRONG_CODE"
+    WRONG_CODE = "WRONG_CODE",
+    WRONG_CREDENTIALS = "WRONG_CREDENTIALS"
 }
 
 export const ERROR_CODE = {
@@ -23,7 +24,8 @@ export const errorMessage: { [key in ValueOf<typeof ERROR_CODE>]: string } = {
     SEND_EMAIL_FAILED: "Failed to send email",
     ADD_USER_FAILED: "Failed to add user",
     WRONG_CODE: "Wrong code",
-    UNKNOWN_ERROR: "Unknown error"
+    UNKNOWN_ERROR: "Unknown error",
+    WRONG_CREDENTIALS: "Invalid username or password"
 }
 
 export function getBodyFromErrorCode(code: ValueOf<typeof ERROR_CODE>) {
