@@ -20,8 +20,12 @@ export async function handler(event: APIGatewayEvent){
     }
     catch(e){
         console.log(e)
+    }
+
+    if(!codeEntry){
         return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
     }
+    
 
     try {
         await db.send(new DeleteCommand({
