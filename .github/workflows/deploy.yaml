@@ -120,5 +120,5 @@ jobs:
       - name: log
         run: tree -L 2
       - name: Upload the zip file to AWS layer
-        run: aws lambda publish-layer-version --layer-name goLayer --zip-file fileb://layer.zip
+        run: aws lambda publish-layer-version --layer-name goLayer --zip-file fileb://layer.zip --compatible-runtimes nodejs20.x --compatible-architectures x86_64
       

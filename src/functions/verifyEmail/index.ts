@@ -2,13 +2,7 @@ import { DeleteCommand, GetCommand, ScanCommand, UpdateCommand } from "@aws-sdk/
 import { APIGatewayEvent } from "aws-lambda";
 import { TABLE_NAME, db } from "utils/db";
 import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
-import jwt from "jsonwebtoken"
 import { createTokenFromUser } from "utils/auth";
-
-// Temporary solution
-process.env = process.env || {}
-process.env.JWT_SECRET_KEY = "jwt_secret_key"
-
 
 export async function handler(event: APIGatewayEvent){
     const body = JSON.parse(event.body)

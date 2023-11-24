@@ -27,7 +27,10 @@ async function findUser(username: string, password: string){
     try {
         const resp = await db.send(new ScanCommand({
             TableName: TABLE_NAME.USERS,
-            FilterExpression: "(email = :username OR name = :username) AND password = :password",
+            FilterExpression: "(email = :username OR #name = :username) AND password = :password",
+            ExpressionAttributeNames: {
+                "#name": "name"
+            },
             ExpressionAttributeValues: {
                 ":username": {
                     S: username
