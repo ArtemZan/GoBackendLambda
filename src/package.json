@@ -22,6 +22,5 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/jsonwebtoken": "^9.0.5"
   }
 }

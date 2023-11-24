@@ -14,7 +14,10 @@ jobs:
       with:
         node-version: 16
     - name: install dependencies
-      run: npm install
+      run: |
+        npm install
+        cd ./src
+        npm install
     - name: tsc
       run: tsc
     - name: Upload the build folder
