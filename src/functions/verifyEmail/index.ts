@@ -3,6 +3,7 @@ import { APIGatewayEvent } from "aws-lambda";
 import { TABLE_NAME, db } from "utils/db";
 import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
 import { createTokenFromUser } from "utils/auth";
+import {unmarshall} from "@aws-sdk/util-dynamodb"
 
 export async function handler(event: APIGatewayEvent){
     const body = JSON.parse(event.body)
@@ -52,7 +53,7 @@ export async function handler(event: APIGatewayEvent){
             }
         }))
 
-        user = userResp.Items[0]
+        user = unmarshall(userResp.Items[0])
     }
     catch(e){
         console.log(e)

@@ -1,10 +1,11 @@
-import { ScanCommand } from "@aws-sdk/client-dynamodb";
+import { ScanCommand, DynamoDB } from "@aws-sdk/client-dynamodb";
 import { APIGatewayEvent } from "aws-lambda";
 import sha256 from "sha256";
 import { createTokenFromUser } from "utils/auth";
 import { TABLE_NAME, db } from "utils/db";
 import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
-
+import { User } from "../../types";
+import {unmarshall} from "@aws-sdk/util-dynamodb"
 
 export async function handler(event: APIGatewayEvent){
     const body = JSON.parse(event.body)
@@ -21,7 +22,7 @@ export async function handler(event: APIGatewayEvent){
 }
 
 
-async function findUser(username: string, password: string){
+async function findUser(username: string, password: string): Promise<User> {
     const encodedPassword = sha256(password).toString()
 
     try {
@@ -41,7 +42,7 @@ async function findUser(username: string, password: string){
             }
         }))
 
-        return resp.Items[0]
+        return unmarshall(resp.Items[0]) as User
     }
     catch(e){
         console.log(e)
