@@ -10,6 +10,7 @@ import { v4 as UUID } from "uuid"
 
 import { getResponseFromErrorCode, ERROR_CODE } from "utils/errors"
 import { db } from 'utils/db';
+import { getUserByEmail } from 'utils/db/requests';
 
 // Temporary solution
 process.env = process.env || {}
@@ -46,17 +47,7 @@ export async function handler(event: APIGatewayEvent) {
 }
 
 async function checkIsEmailUsed(email: string) {
-    const response = await db.send(new ScanCommand({
-        TableName: "users",
-        FilterExpression: "email = :email",
-        ExpressionAttributeValues: {
-            ":email": email
-        }
-    }))
-
-    const users = response.Items
-
-    return !!users?.length
+    return !!getUserByEmail(email)
 }
 
 async function sendValidationEmail(email: string) {

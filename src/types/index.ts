@@ -11,3 +11,8 @@ export type User = {
     name: string
     id: string
 }
+
+export type Game = {
+    id: string
+    players: string[]
+}

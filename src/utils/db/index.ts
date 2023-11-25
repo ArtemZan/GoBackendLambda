@@ -7,5 +7,7 @@ export const db = DynamoDBDocumentClient.from(client);
 
 export const enum TABLE_NAME {
     EMAIL_CODES = "emailCodes",
-    USERS = "users"
+    USERS = "users",
+    WS_CONNECTIONS = "wsConnections",
+    GAMES = "games"
 }
