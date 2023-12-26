@@ -15,6 +15,10 @@ export type User = {
 export type Game = {
     id: string
     players: string[]
+    pieces: {
+        black: number[]
+        white: number[]
+    }
 }
 
 export const enum TEAM {

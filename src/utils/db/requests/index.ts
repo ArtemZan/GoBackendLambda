@@ -1,6 +1,6 @@
 import { GetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb"
-import { TABLE_NAME, db } from "."
-import { User } from "../../types"
+import { TABLE_NAME, db } from ".."
+import { User } from "../../../types"
 import { unmarshall } from "@aws-sdk/util-dynamodb"
 
 export async function getUserByEmail(email: string) {
