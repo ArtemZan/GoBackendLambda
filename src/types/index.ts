@@ -16,3 +16,8 @@ export type Game = {
     id: string
     players: string[]
 }
+
+export const enum TEAM {
+    WHITE = "WHITE",
+    BLACK = "BLACK"
+}

@@ -1,4 +1,4 @@
-import { ScanCommand } from "@aws-sdk/lib-dynamodb"
+import { GetCommand, ScanCommand } from "@aws-sdk/lib-dynamodb"
 import { TABLE_NAME, db } from "."
 import { User } from "../../types"
 import { unmarshall } from "@aws-sdk/util-dynamodb"
@@ -18,6 +18,22 @@ export async function getUserByEmail(email: string) {
         }
 
         return unmarshall(resp.Items[0]) as User
+    }
+    catch (e) {
+        console.log(e)
+    }
+}
+
+export async function getUserById(id: string){
+    try {
+        const resp = await db.send(new GetCommand({
+            TableName: TABLE_NAME.USERS,
+            Key: {
+                id
+            }
+        }))
+
+        return unmarshall(resp.Item) as User
     }
     catch (e) {
         console.log(e)
