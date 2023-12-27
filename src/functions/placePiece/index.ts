@@ -2,28 +2,21 @@ import { UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { APIGatewayEvent } from "aws-lambda";
 import { getTokenFromHeaders } from "utils/auth";
 import { TABLE_NAME, db } from "utils/db";
-import { getUserByEmail } from "utils/db/requests";
+import { getUserByEmail, getUserConnections } from "utils/db/requests";
 import { getGame } from "utils/db/requests/game";
 import { Game, TEAM } from "../../types";
+import { createWSManager } from "utils/ws";
 
-export async function handler(event: APIGatewayEvent){
+const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production/@connections")
+
+export async function handler(event: APIGatewayEvent) {
     const body = JSON.parse(event.body)
 
     const JWT = getTokenFromHeaders(event.headers)
-    const user = await getUserByEmail(JWT.email)
-
-    if(!user){
-        return {
-            statusCode: 401,
-            body: JSON.stringify({
-                error: "User not found"
-            })
-        }
-    }
 
     const game = await getGame(body.gameId)
 
-    if(!game){
+    if (!game) {
         return {
             statusCode: 400,
             body: JSON.stringify({
@@ -32,41 +25,69 @@ export async function handler(event: APIGatewayEvent){
         }
     }
 
-    // To do: calculate the killed pieces
+    const updatedGame = placePiece(game, JWT.id, body.position)
 
-    // To do: get the actual board size
-    const boardWidth = 9
+    await updateGame(updatedGame)
 
-    const position = body.position
-    const index = position.y * boardWidth + position.x
-
-    // To do: ...
-    //await updateGame(game, user.)
+    await notifyPlayers(updatedGame)
 }
 
-async function updateGame(game: Game, team: TEAM, position: number){
-    try{
-        const pieces = {...game.pieces}
-        if(team === TEAM.WHITE){
-            pieces.white = [...pieces.white, position]
-        }
-        else {
-            pieces.black = [...pieces.black, position]
-        }
+function placePiece(game: Game, userId: string, position: { x: number, y: number }) {
+    
+    // To do: get the actual board size.
+    const boardWidth = 9
+    const index = position.y * boardWidth + position.x
+    
+    // To do: calculate the killed pieces
+    const updatedGame: Game = {
+        ...game,
+        players: game.players.map(player => player.id === userId ?
+            {
+                ...player,
+                pieces: [
+                    ...player.pieces,
+                    index
+                ]
+            }
+            :
+            player)
+    }
 
+    return updatedGame
+}
+
+async function updateGame(updatedGame: Game) {
+    try {
         const resp = await db.send(new UpdateCommand({
             TableName: TABLE_NAME.GAMES,
             Key: {
-                id: game.id
+                id: updatedGame.id
             },
             AttributeUpdates: {
-                pieces: {
-                    Value: pieces
+                players: {
+                    Value: updatedGame.players
                 }
             }
         }))
     }
-    catch(e){
+    catch (e) {
         console.log(e)
     }
+}
+
+async function notifyPlayers(updatedGame: Game) {
+    
+    try {
+        const connections = await Promise.all(updatedGame.players.map(player => getUserConnections(player.id)))
+
+        wsManager.sendToAll(connections.flat(), JSON.stringify({
+            action: "updatePieces",
+            body: updatedGame
+        }))
+    }
+    catch(e){
+        console.log(e)
+        return
+    }
+
 }

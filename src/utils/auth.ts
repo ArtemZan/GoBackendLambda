@@ -9,7 +9,6 @@ process.env.JWT_SECRET_KEY = "jwt_secret_key"
 export function createTokenFromUser(user: Partial<User>){
     const {
         password: _1,
-        id: _2,
         ...jwtContent
     } = user
 

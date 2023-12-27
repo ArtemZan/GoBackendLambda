@@ -12,13 +12,17 @@ export type User = {
     id: string
 }
 
+export type Player = {
+    id: string
+    pieces: number[]
+    team: TEAM
+    timeOut: number
+}
+
 export type Game = {
     id: string
-    players: string[]
-    pieces: {
-        black: number[]
-        white: number[]
-    }
+    players: Player[]
+    teamOnMove: TEAM
 }
 
 export const enum TEAM {

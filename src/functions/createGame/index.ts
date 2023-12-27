@@ -5,6 +5,7 @@ import { TABLE_NAME, db } from "utils/db";
 import { getUserByEmail } from "utils/db/requests";
 import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
 import { v4 as UUID } from "uuid"
+import { TEAM } from "../../types";
 
 export async function handler(event: APIGatewayEvent){
     const jwt = getTokenFromHeaders(event.headers)
@@ -39,7 +40,13 @@ async function createGame(userId: string){
             TableName: TABLE_NAME.GAMES,
             Item: {
                 id: gameId,
-                players: [userId]
+                players: [
+                    {
+                        id: userId
+                    }
+                ],
+                // Black always begin
+                teamOnMove: TEAM.BLACK
             }
         }))
 

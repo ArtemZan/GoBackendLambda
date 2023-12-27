@@ -24,23 +24,22 @@ export async function handler(event: APIGatewayEvent) {
     const parsedJWT = jwt.decode(body.token) as jwt.JwtPayload
     const user = await getUserByEmail(parsedJWT.email)
 
-    await updateGame(game, user.id)
+    const playerTeam: TEAM = Math.random() < 0.5 ? TEAM.BLACK : TEAM.WHITE
+    const opponentTeam: TEAM = playerTeam === TEAM.BLACK ? TEAM.WHITE : TEAM.BLACK
 
-    await notifyPlayers(game, user)
+    await updateGame(game, user.id, playerTeam, opponentTeam)
+
+    await notifyPlayers(game, user, playerTeam, opponentTeam)
 }
 
 
 
 
-async function notifyPlayers(game: Game, player: User) {
-    const playerTeam: TEAM = Math.random() < 0.5 ? TEAM.BLACK : TEAM.WHITE
-    const opponentTeam: TEAM = playerTeam === TEAM.BLACK ? TEAM.WHITE : TEAM.BLACK
-
-
+async function notifyPlayers(game: Game, player: User, playerTeam: TEAM, opponentTeam: TEAM) {
     const playerWSConnections = await getUserWSConnections(player.id)
-    const opponentWSConnections = await getUserWSConnections(game.players[0])
+    const opponentWSConnections = await getUserWSConnections(game.players[0].id)
 
-    const opponent = await getUserById(game.players[0])
+    const opponent = await getUserById(game.players[0].id)
 
     wsManager.sendToAll(playerWSConnections, JSON.stringify({
         action: "game/start",
@@ -59,8 +58,18 @@ async function notifyPlayers(game: Game, player: User) {
     }))
 }
 
-async function updateGame(game: Game, newPlayerId: string) {
+async function updateGame(game: Game, newPlayerId: string, playerTeam: TEAM, opponentTeam: TEAM) {
     try {
+        const player = {
+            ...game.players[0],
+            team: playerTeam
+        }
+
+        const opponent = {
+            id: newPlayerId,
+            team: opponentTeam
+        }
+
         await db.send(new UpdateCommand({
             TableName: TABLE_NAME.GAMES,
             Key: {
@@ -69,8 +78,8 @@ async function updateGame(game: Game, newPlayerId: string) {
             AttributeUpdates: {
                 players: {
                     Value: [
-                        game.players[0],
-                        newPlayerId
+                        player,
+                        opponent
                     ]
                 }
             }
