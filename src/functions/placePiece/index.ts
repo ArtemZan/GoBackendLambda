@@ -4,8 +4,9 @@ import { getTokenFromHeaders } from "utils/auth";
 import { TABLE_NAME, db } from "utils/db";
 import { getUserByEmail, getUserConnections } from "utils/db/requests";
 import { getGame } from "utils/db/requests/game";
-import { Game, TEAM } from "../../types";
+import { Game, Point, TEAM } from "../../types";
 import { createWSManager } from "utils/ws";
+import { findRemovedPieces, pointToIndex } from "./findRemovedPieces";
 
 const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production/@connections")
 
@@ -32,29 +33,36 @@ export async function handler(event: APIGatewayEvent) {
     await notifyPlayers(updatedGame)
 }
 
-function placePiece(game: Game, userId: string, position: { x: number, y: number }) {
-    
-    // To do: get the actual board size.
-    const boardWidth = 9
-    const index = position.y * boardWidth + position.x
-    
-    // To do: calculate the killed pieces
+// To do: get the actual board size.
+const boardWidth = 13
+const boardHeight = 13
+
+function placePiece(game: Game, userId: string, position: Point) {
+
+    const index = pointToIndex(position)
+
+    const team = game.players.find(p => p.id === userId)?.team
+
+    const removedPieces = findRemovedPieces(game, position, team)
+
     const updatedGame: Game = {
         ...game,
-        players: game.players.map(player => player.id === userId ?
-            {
-                ...player,
-                pieces: [
-                    ...player.pieces,
-                    index
-                ]
+        players: game.players.map(player => {
+            const updatedPieces = player.pieces.filter(index => !removedPieces[index])
+            if(player.id === userId){
+                updatedPieces.push(index)
             }
-            :
-            player)
+
+            return {
+                ...player,
+                pieces: updatedPieces
+            }
+        })
     }
 
     return updatedGame
 }
+
 
 async function updateGame(updatedGame: Game) {
     try {
@@ -76,7 +84,7 @@ async function updateGame(updatedGame: Game) {
 }
 
 async function notifyPlayers(updatedGame: Game) {
-    
+
     try {
         const connections = await Promise.all(updatedGame.players.map(player => getUserConnections(player.id)))
 
@@ -85,7 +93,7 @@ async function notifyPlayers(updatedGame: Game) {
             body: updatedGame
         }))
     }
-    catch(e){
+    catch (e) {
         console.log(e)
         return
     }

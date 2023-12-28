@@ -29,3 +29,8 @@ export const enum TEAM {
     WHITE = "WHITE",
     BLACK = "BLACK"
 }
+
+export type Point = {
+    x: number
+    y: number
+}
