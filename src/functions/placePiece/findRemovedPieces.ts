@@ -15,11 +15,13 @@ function indexToPoint(index: number) {
     }
 }
 
+type BoardMap = {
+    isChecked?: boolean
+    team?: TEAM
+}[]
+
 function getBoard(game: Game) {
-    const board: {
-        isChecked: boolean
-        team: TEAM
-    }[] = new Array(boardHeight * boardWidth)
+    const board: BoardMap = new Array(boardHeight * boardWidth)
 
     game.players.forEach(player =>
         player.pieces.forEach(piece =>
@@ -40,39 +42,41 @@ type Span = {
     dy: 1 | -1
 }
 
+function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
+    const team = board[pointToIndex(pointFromArea)].team
 
-export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
-    const board = getBoard(game)
+    if (!team) {
+        return null
+    }
 
     const spans: Span[] = [
         {
-            x1: position.x,
-            x2: position.x,
-            y: position.y,
+            x1: pointFromArea.x,
+            x2: pointFromArea.x,
+            y: pointFromArea.y,
             dy: 1
         },
         {
-            x1: position.x,
-            x2: position.x,
-            y: position.y - 1,
+            x1: pointFromArea.x,
+            x2: pointFromArea.x,
+            y: pointFromArea.y - 1,
             dy: -1
         }
     ]
 
-    while (spans.length)
-    {
+    while (spans.length) {
         const span = spans.pop()
         const rowSpansSearchResult = checkRowForSpans(span)
         if (rowSpansSearchResult.foundEmpty) {
             return {
-                noRemoved: true
+                isSurrounded: false
             }
         }
 
         spans.push(...rowSpansSearchResult.spans)
     }
 
-    function checkRowForSpans({x1, x2, y, dy}: Span) {
+    function checkRowForSpans({ x1, x2, y, dy }: Span) {
         const spans: Span[] = []
 
         function getLeftmostPoint() {
@@ -83,7 +87,7 @@ export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
                 leftmostX++
             }
 
-            if(board[pointToIndex({ x: leftmostX, y })].isChecked){
+            if (board[pointToIndex({ x: leftmostX, y })].isChecked) {
                 return {
                     isChecked: true
                 }
@@ -125,7 +129,7 @@ export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
 
             let point: typeof board[0] = null
 
-            if(board[pointToIndex({ x, y })].isChecked){
+            if (board[pointToIndex({ x, y })].isChecked) {
                 continue
             }
 
@@ -148,7 +152,7 @@ export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
                 dy
             })
 
-            if(x > x2 + 1){
+            if (x > x2 + 1) {
                 spans.push({
                     x1: spanStart,
                     x2: x,
@@ -163,10 +167,52 @@ export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
         }
     }
 
-    const removedPieces = board.map(piece => piece.isChecked)
+    const areaMap = board.map(piece => piece.isChecked)
 
     return {
-        noRemoved: false,
+        isSurrounded: true,
+        area: areaMap
+    }
+}
+
+export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
+    const board = getBoard(game)
+
+    board[pointToIndex(position)] = {
+        team,
+        isChecked: false
+    }
+
+
+    const neighbours = [
+        { x: position.x, y: position.y + 1 },
+        { x: position.x + 1, y: position.y },
+        { x: position.x, y: position.y - 1 },
+        { x: position.x - 1, y: position.y }
+    ]
+
+    const removedPieces = neighbours
+        .map(position => isAreaSurrounded(board, position))
+        .reduce<boolean[]>((prev, current) => prev ?
+            current.isSurrounded ?
+                prev
+                :
+                current.area.map((isRemoved, index) => isRemoved || prev[index])
+            :
+            current.area
+            , null)
+
+
+    const { isSurrounded: isSuicide } = isAreaSurrounded(board, position)
+
+    // Suicide doesn't take place, if some of the enemies pieces are killed
+    if(isSuicide && !removedPieces){
+        return {
+            isSuicide: true
+        }
+    }
+
+    return {
         removedPieces
     }
 }

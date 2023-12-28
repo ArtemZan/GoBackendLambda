@@ -26,16 +26,21 @@ export async function handler(event: APIGatewayEvent) {
         }
     }
 
-    const updatedGame = placePiece(game, JWT.id, body.position)
+    const { isSuicide, updatedGame} = placePiece(game, JWT.id, body.position)
+
+    if(isSuicide){
+        return {
+            statusCode: 400,
+            body: JSON.stringify({
+                error: "This is suicide"
+            })
+        }
+    }
 
     await updateGame(updatedGame)
 
     await notifyPlayers(updatedGame)
 }
-
-// To do: get the actual board size.
-const boardWidth = 13
-const boardHeight = 13
 
 function placePiece(game: Game, userId: string, position: Point) {
 
@@ -43,12 +48,22 @@ function placePiece(game: Game, userId: string, position: Point) {
 
     const team = game.players.find(p => p.id === userId)?.team
 
-    const removedPieces = findRemovedPieces(game, position, team)
+    const {
+        isSuicide,
+        removedPieces
+    } = findRemovedPieces(game, position, team)
+
+    if(isSuicide){
+        return {
+            isSuicide: true
+        }
+    }
 
     const updatedGame: Game = {
         ...game,
         players: game.players.map(player => {
-            const updatedPieces = player.pieces.filter(index => !removedPieces[index])
+            const updatedPieces = removedPieces?.length ? player.pieces.filter(index => !removedPieces[index]) : player.pieces
+
             if(player.id === userId){
                 updatedPieces.push(index)
             }
@@ -60,7 +75,9 @@ function placePiece(game: Game, userId: string, position: Point) {
         })
     }
 
-    return updatedGame
+    return {
+        updatedGame
+    }
 }
 
 
