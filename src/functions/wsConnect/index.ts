@@ -14,8 +14,10 @@ export async function handler(event: APIGatewayEvent) {
 
     let parsedJWT: jwt.JwtPayload
 
+    console.log(event.queryStringParameters)
+
     try {
-        parsedJWT = getTokenFromHeaders(event.headers)
+        parsedJWT = jwt.decode(event.queryStringParameters.JWT) as jwt.JwtPayload
     }
     catch (e) {
         console.log(e)

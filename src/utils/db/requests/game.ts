@@ -2,6 +2,7 @@ import { unmarshall } from "@aws-sdk/util-dynamodb"
 import { TABLE_NAME, db } from ".."
 import { GetCommand } from "@aws-sdk/lib-dynamodb"
 import { Game } from "../../../types"
+import { getUserConnections } from "."
 
 export async function getGame(id: string): Promise<Game>{
     try{
@@ -17,4 +18,8 @@ export async function getGame(id: string): Promise<Game>{
     catch(e){
         console.log(e)
     }
+}
+
+export async function getPlayersConnections(game: Game){
+    return Promise.all(game.players.map(player => getUserConnections(player.id)))
 }

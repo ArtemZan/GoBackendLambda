@@ -7,6 +7,7 @@ import { getGame } from "utils/db/requests/game";
 import { Game, Point, TEAM } from "../../types";
 import { createWSManager } from "utils/ws";
 import { findRemovedPieces, pointToIndex } from "./findRemovedPieces";
+import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
 
 const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production/@connections")
 
@@ -18,12 +19,7 @@ export async function handler(event: APIGatewayEvent) {
     const game = await getGame(body.gameId)
 
     if (!game) {
-        return {
-            statusCode: 400,
-            body: JSON.stringify({
-                error: "This game doesn't exist"
-            })
-        }
+        return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
     }
 
     const { isSuicide, updatedGame} = placePiece(game, JWT.id, body.position)
@@ -106,7 +102,7 @@ async function notifyPlayers(updatedGame: Game) {
         const connections = await Promise.all(updatedGame.players.map(player => getUserConnections(player.id)))
 
         wsManager.sendToAll(connections.flat(), JSON.stringify({
-            action: "updatePieces",
+            action: "game/passTurn",
             body: updatedGame
         }))
     }
