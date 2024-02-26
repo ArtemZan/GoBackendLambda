@@ -47,6 +47,11 @@ export async function handler(event: APIGatewayEvent) {
     }
 
     await saveConnection(user.id, connectionId)
+
+    return {
+        status: 200,
+        body: ""
+    }
 }
 
 
