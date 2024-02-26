@@ -19,7 +19,7 @@ export async function getUserByEmail(email: string) {
             console.log(`Found ${resp.Count} users with the given email!`)
         }
 
-        return unmarshall(resp.Items[0]) as User
+        return resp.Items[0] as User
     }
     catch (e) {
         console.log(e)
