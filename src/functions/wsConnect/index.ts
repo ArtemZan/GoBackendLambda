@@ -33,6 +33,8 @@ export async function handler(event: APIGatewayEvent) {
         }
     }
 
+    console.log("Got token: ", parsedJWT)
+
     const user = await getUserByEmail(parsedJWT.email)
 
     if (!user) {
@@ -50,8 +52,9 @@ export async function handler(event: APIGatewayEvent) {
 
 
 async function saveConnection(userId: string, connectionId: string) {
+    console.log("Saving connection: ", userId, connectionId)
     try {
-        db.send(new PutCommand({
+        return db.send(new PutCommand({
             TableName: TABLE_NAME.WS_CONNECTIONS,
             Item: {
                 id: connectionId,

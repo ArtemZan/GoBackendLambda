@@ -22,9 +22,9 @@ export async function handler(event: APIGatewayEvent) {
         return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
     }
 
-    const { isSuicide, updatedGame} = placePiece(game, JWT.id, body.position)
+    const { isSuicide, updatedGame } = placePiece(game, JWT.id, body.position)
 
-    if(isSuicide){
+    if (isSuicide) {
         return {
             statusCode: 400,
             body: JSON.stringify({
@@ -49,7 +49,7 @@ function placePiece(game: Game, userId: string, position: Point) {
         removedPieces
     } = findRemovedPieces(game, position, team)
 
-    if(isSuicide){
+    if (isSuicide) {
         return {
             isSuicide: true
         }
@@ -60,7 +60,7 @@ function placePiece(game: Game, userId: string, position: Point) {
         players: game.players.map(player => {
             const updatedPieces = removedPieces?.length ? player.pieces.filter(index => !removedPieces[index]) : player.pieces
 
-            if(player.id === userId){
+            if (player.id === userId) {
                 updatedPieces.push(index)
             }
 
