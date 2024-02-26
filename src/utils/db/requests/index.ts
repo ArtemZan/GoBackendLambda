@@ -13,6 +13,8 @@ export async function getUserByEmail(email: string) {
             }
         }))
 
+        console.log("Got user: ", resp.Items)
+
         if (resp.Count > 1) {
             console.log(`Found ${resp.Count} users with the given email!`)
         }
