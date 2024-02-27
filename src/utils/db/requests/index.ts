@@ -55,7 +55,7 @@ export async function getUserConnections(userId: string) {
 
         console.log("Got user connections for user: ", userId, " - ", resp)
 
-        return resp.Items?.map(item => unmarshall(item).id)
+        return resp.Items?.map(item => item.id)
     }
     catch (e) {
         console.log(e)
