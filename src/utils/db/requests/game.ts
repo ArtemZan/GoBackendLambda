@@ -14,7 +14,7 @@ export async function getGame(id: string): Promise<Game>{
         }))
         console.log("Got game: ", resp)
 
-        return unmarshall(resp.Item) as Game
+        return resp.Item as Game
     }
     catch(e){
         console.log(e)

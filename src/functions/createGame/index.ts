@@ -42,11 +42,11 @@ async function createGame(userId: string){
             TableName: TABLE_NAME.GAMES,
             Item: {
                 id: gameId,
-                players: [
+                players: JSON.stringify([
                     {
                         id: userId
                     }
-                ],
+                ]),
                 // Black always begin
                 teamOnMove: TEAM.BLACK
             }

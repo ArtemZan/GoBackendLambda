@@ -77,10 +77,10 @@ async function updateGame(game: Game, newPlayerId: string, playerTeam: TEAM, opp
             },
             AttributeUpdates: {
                 players: {
-                    Value: [
+                    Value: JSON.stringify([
                         player,
                         opponent
-                    ]
+                    ])
                 }
             }
         }))
