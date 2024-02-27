@@ -17,7 +17,9 @@ export async function handler(event: APIGatewayEvent){
         return
     }
 
-    const gameId = createGame(user.id)
+    const gameId = await createGame(user.id)
+
+    console.log("Created game id: ", gameId);
 
     if(!gameId){
         return getResponseFromErrorCode(500, ERROR_CODE.UNKNOWN_ERROR)
