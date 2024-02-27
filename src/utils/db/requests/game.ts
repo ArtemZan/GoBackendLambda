@@ -14,7 +14,17 @@ export async function getGame(id: string): Promise<Game>{
         }))
         console.log("Got game: ", resp)
 
-        return resp.Item as Game
+        if(!resp.Item)
+        {
+            return
+        }
+
+        const game = {
+            ...resp.Item,
+            players: JSON.parse(resp.Item.players)
+        } as Game
+
+        return game
     }
     catch(e){
         console.log(e)

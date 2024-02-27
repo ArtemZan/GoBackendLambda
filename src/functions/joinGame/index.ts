@@ -37,6 +37,8 @@ export async function handler(event: APIGatewayEvent) {
 
 
 async function notifyPlayers(game: Game, player: User, playerTeam: TEAM, opponentTeam: TEAM) {
+
+    console.log("Notify players: ", game, player, playerTeam, opponentTeam)
     const playerWSConnections = await getUserWSConnections(player.id)
     const opponentWSConnections = await getUserWSConnections(game.players[0].id)
 
@@ -71,6 +73,15 @@ async function updateGame(game: Game, newPlayerId: string, playerTeam: TEAM, opp
             team: opponentTeam
         }
 
+        console.log("Update game: ", {
+            players: {
+                Value: JSON.stringify([
+                    player,
+                    opponent
+                ])
+            }
+        })
+
         await db.send(new UpdateCommand({
             TableName: TABLE_NAME.GAMES,
             Key: {
@@ -87,6 +98,6 @@ async function updateGame(game: Game, newPlayerId: string, playerTeam: TEAM, opp
         }))
     }
     catch (e) {
-
+        console.log("updateGame error: ", e)
     }
 }
