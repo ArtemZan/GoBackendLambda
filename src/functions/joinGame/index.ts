@@ -8,6 +8,7 @@ import { Game, TEAM, User } from "../../types";
 import { createWSManager } from "utils/ws";
 import jwt from "jsonwebtoken";
 import { getGame } from "utils/db/requests/game";
+import { getTokenFromHeaders } from "utils/auth";
 
 const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production/@connections")
 
@@ -21,7 +22,7 @@ export async function handler(event: APIGatewayEvent) {
         return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
     }
 
-    const parsedJWT = jwt.decode(body.token) as jwt.JwtPayload
+    const parsedJWT = getTokenFromHeaders(event.headers)
     const user = await getUserByEmail(parsedJWT.email)
 
     const playerTeam: TEAM = Math.random() < 0.5 ? TEAM.BLACK : TEAM.WHITE
