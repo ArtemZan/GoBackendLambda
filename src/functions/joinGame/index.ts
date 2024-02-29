@@ -44,7 +44,7 @@ async function notifyPlayers(game: Game, player: User, playerTeam: TEAM, opponen
 
     const opponent = await getUserById(game.players[0].id)
 
-    wsManager.sendToAll(playerWSConnections, JSON.stringify({
+    await wsManager.sendToAll(playerWSConnections, JSON.stringify({
         action: "game/start",
         payload: {
             team: playerTeam,
@@ -52,13 +52,15 @@ async function notifyPlayers(game: Game, player: User, playerTeam: TEAM, opponen
         }
     }))
 
-    wsManager.sendToAll(opponentWSConnections, JSON.stringify({
+    await wsManager.sendToAll(opponentWSConnections, JSON.stringify({
         action: "game/start",
         payload: {
             team: opponentTeam,
             opponent: player
         }
     }))
+
+    console.log("Sent all connections")
 }
 
 async function updateGame(game: Game, newPlayerId: string, playerTeam: TEAM, opponentTeam: TEAM) {
