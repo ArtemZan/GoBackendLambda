@@ -23,11 +23,16 @@ process.env.VERIFY_EMAIL_URL = "http://localhost:3000/verify-email"
 export async function handler(event: APIGatewayEvent) {
     const body = JSON.parse(event.body) as SignUpBody
 
+    console.log("Sign up body: ", body)
+
     const isEmailUsed = await checkIsEmailUsed(body.email)
+
+    console.log("Is email used: ", isEmailUsed)
 
     if (isEmailUsed) {
         return getResponseFromErrorCode(400, ERROR_CODE.EMAIL_TAKEN)
     }
+
 
     try {
         await sendValidationEmail(body.email)
@@ -53,6 +58,8 @@ async function checkIsEmailUsed(email: string) {
 async function sendValidationEmail(email: string) {
     const code = UUID()
 
+    console.log("sendValidationEmail. Code: ", code)
+
     await db.send(new PutCommand({
         TableName: "emailCodes",
         Item: {
@@ -73,6 +80,7 @@ async function sendValidationEmail(email: string) {
             pass: process.env.SENDER_EMAIL_PWD
         }
     })
+
 
     const mailOptions = {
         from: process.env.SENDER_EMAIL,
