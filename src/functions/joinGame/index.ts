@@ -10,7 +10,7 @@ import jwt from "jsonwebtoken";
 import { getGame } from "utils/db/requests/game";
 import { getTokenFromHeaders } from "utils/auth";
 
-const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production/@connections")
+const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production")
 
 export async function handler(event: APIGatewayEvent) {
     const body = JSON.parse(event.body)
