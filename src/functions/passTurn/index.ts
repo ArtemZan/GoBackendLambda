@@ -7,7 +7,7 @@ import { TABLE_NAME, db } from "utils/db";
 import { UpdateCommand } from "@aws-sdk/lib-dynamodb";
 import { createWSManager } from "utils/ws";
 
-const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production/@connections")
+const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production")
 
 export async function handler(event: APIGatewayEvent){
     const body = JSON.parse(event.body)

@@ -9,7 +9,7 @@ import { createWSManager } from "utils/ws";
 import { findRemovedPieces, pointToIndex } from "./findRemovedPieces";
 import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
 
-const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production/@connections")
+const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production")
 
 export async function handler(event: APIGatewayEvent) {
     const body = JSON.parse(event.body)
