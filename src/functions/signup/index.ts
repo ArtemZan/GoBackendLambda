@@ -52,7 +52,7 @@ export async function handler(event: APIGatewayEvent) {
 }
 
 async function checkIsEmailUsed(email: string) {
-    return !!getUserByEmail(email)
+    return !!(await getUserByEmail(email))
 }
 
 async function sendValidationEmail(email: string) {
