@@ -5,6 +5,7 @@ import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
 import { createTokenFromUser } from "utils/auth";
 import { unmarshall } from "@aws-sdk/util-dynamodb"
 import { getUserByEmail } from "utils/db/requests";
+import { User } from "../../types";
 
 export async function handler(event: APIGatewayEvent) {
     const body = JSON.parse(event.body)
@@ -47,9 +48,9 @@ export async function handler(event: APIGatewayEvent) {
     }
 
 
-    let user = null
+    let user: User = null
 
-    user = getUserByEmail(codeEntry.email)
+    user = await getUserByEmail(codeEntry.email)
     if (!user) {
         return getResponseFromErrorCode(500, ERROR_CODE.UNKNOWN_ERROR)
     }
