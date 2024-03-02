@@ -54,6 +54,7 @@ export async function handler(event: APIGatewayEvent) {
         return getResponseFromErrorCode(500, ERROR_CODE.UNKNOWN_ERROR)
     }
 
+    console.log("Update is email verified for user: ", user, user.id)
 
     try {
         user.isEmailVerified = true
@@ -62,9 +63,10 @@ export async function handler(event: APIGatewayEvent) {
             Key: {
                 id: user.id
             },
-            UpdateExpression: "set isEmailVerified = :isEmailVerified",
-            ExpressionAttributeValues: {
-                ":isEmailVerified": true
+            AttributeUpdates: {
+                isEmailVerified: {
+                    Value: true
+                }
             }
         }))
 
