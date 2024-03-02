@@ -34,3 +34,8 @@ export type Point = {
     x: number
     y: number
 }
+
+export type Connection = {
+    id: string
+    userId: string
+}

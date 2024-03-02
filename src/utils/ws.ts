@@ -8,7 +8,7 @@ export function createWSManager(endpoint: string) {
 
     async function send(connectionId: string, data: string) {
         console.log("Send ws message to: ", connectionId, "data: ", data)
-        await apigwManagementApi.postToConnection({ ConnectionId: connectionId, Data: `Echo: ${data}` });
+        await apigwManagementApi.postToConnection({ ConnectionId: connectionId, Data: data });
     }
 
     function sendToAll(connectionIds: string[], data: string) {
