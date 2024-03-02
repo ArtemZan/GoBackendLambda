@@ -3,14 +3,15 @@ import { APIGatewayEvent } from "aws-lambda";
 import { TABLE_NAME, db } from "utils/db";
 import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
 import { createTokenFromUser } from "utils/auth";
-import {unmarshall} from "@aws-sdk/util-dynamodb"
+import { unmarshall } from "@aws-sdk/util-dynamodb"
+import { getUserByEmail } from "utils/db/requests";
 
-export async function handler(event: APIGatewayEvent){
+export async function handler(event: APIGatewayEvent) {
     const body = JSON.parse(event.body)
 
-    let codeEntry: {email: string, code: string} = null
+    let codeEntry: { email: string, code: string } = null
 
-    try{
+    try {
         const codeResp = await db.send(new GetCommand({
             TableName: TABLE_NAME.EMAIL_CODES,
             Key: {
@@ -20,14 +21,16 @@ export async function handler(event: APIGatewayEvent){
 
         codeEntry = codeResp.Item as any
     }
-    catch(e){
+    catch (e) {
         console.log(e)
     }
 
-    if(!codeEntry){
+    console.log("Got codeEntry: ", codeEntry)
+
+    if (!codeEntry) {
         return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
     }
-    
+
 
     try {
         await db.send(new DeleteCommand({
@@ -36,27 +39,18 @@ export async function handler(event: APIGatewayEvent){
                 code: body.code
             }
         }))
+        console.log("Deleted code entry")
     }
-    catch(e){
+    catch (e) {
         console.log(e)
         return getResponseFromErrorCode(500, ERROR_CODE.UNKNOWN_ERROR)
     }
 
+
     let user = null
 
-    try{
-        const userResp = await db.send(new ScanCommand({
-            TableName: TABLE_NAME.USERS,
-            FilterExpression: "email = :email",
-            ExpressionAttributeValues: {
-                ":email": codeEntry.email
-            }
-        }))
-
-        user = unmarshall(userResp.Items[0])
-    }
-    catch(e){
-        console.log(e)
+    user = getUserByEmail(codeEntry.email)
+    if (!user) {
         return getResponseFromErrorCode(500, ERROR_CODE.UNKNOWN_ERROR)
     }
 
@@ -73,8 +67,10 @@ export async function handler(event: APIGatewayEvent){
                 ":isEmailVerified": true
             }
         }))
+
+        console.log("Update is email verified")
     }
-    catch(e){
+    catch (e) {
         console.log(e)
         return getResponseFromErrorCode(500, ERROR_CODE.UNKNOWN_ERROR)
     }
