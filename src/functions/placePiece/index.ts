@@ -1,5 +1,5 @@
 import { UpdateCommand } from "@aws-sdk/lib-dynamodb";
-import { APIGatewayEvent } from "aws-lambda";
+import { APIGatewayEvent, APIGatewayEventRequestContext, Context, Handler } from "aws-lambda";
 import { getTokenFromHeaders } from "utils/auth";
 import { TABLE_NAME, db } from "utils/db";
 import { getUserByEmail, getUserConnections } from "utils/db/requests";
@@ -8,13 +8,14 @@ import { Game, Point, TEAM } from "../../types";
 import { createWSManager } from "utils/ws";
 import { findRemovedPieces, pointToIndex } from "./findRemovedPieces";
 import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
+import * as jwt from "jsonwebtoken";
 
 const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production")
 
-export async function handler(event: APIGatewayEvent) {
+export async function handler(event: APIGatewayEvent, context: Context) {
     const body = JSON.parse(event.body)
 
-    const JWT = getTokenFromHeaders(event.headers)
+    const JWT = jwt.decode(context.clientContext?.Custom?.JWT) as jwt.JwtPayload
 
     const game = await getGame(body.gameId)
 

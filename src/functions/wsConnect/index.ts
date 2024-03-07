@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken"
-import { APIGatewayEvent } from "aws-lambda"
+import { APIGatewayEvent, Context } from "aws-lambda"
 import { TABLE_NAME, db } from "utils/db"
 import { PutCommand } from "@aws-sdk/lib-dynamodb"
 import { getUserByEmail } from "utils/db/requests"
 import { getTokenFromHeaders } from "utils/auth"
 
-export async function handler(event: APIGatewayEvent) {
+export async function handler(event: APIGatewayEvent, context: Context) {
     const {
         requestContext: {
             connectionId
@@ -14,7 +14,11 @@ export async function handler(event: APIGatewayEvent) {
 
     let parsedJWT: jwt.JwtPayload
 
-    console.log(event.queryStringParameters)
+    const JWT = event.queryStringParameters
+    console.log(JWT)
+    context.clientContext = context.clientContext || {} as any
+    context.clientContext.Custom = context.clientContext.Custom || {}
+    context.clientContext.Custom.JWT = JWT
 
     try {
         parsedJWT = jwt.decode(event.queryStringParameters.JWT) as jwt.JwtPayload
