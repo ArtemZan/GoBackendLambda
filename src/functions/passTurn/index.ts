@@ -1,6 +1,5 @@
 import { APIGatewayEvent } from "aws-lambda";
-import { getTokenFromHeaders } from "utils/auth";
-import { getGame, getPlayersConnections } from "utils/db/requests/game";
+import { getGame } from "utils/db/requests/game";
 import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
 import { Game, TEAM } from "../../types";
 import { TABLE_NAME, db } from "utils/db";
@@ -11,8 +10,6 @@ const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.ama
 
 export async function handler(event: APIGatewayEvent){
     const body = JSON.parse(event.body)
-
-    const JWT = getTokenFromHeaders(event.headers)
 
     const game = await getGame(body.gameId)
 
@@ -45,9 +42,9 @@ async function updateGame(game: Game){
 }
 
 async function notifyPlayers(game: Game){
-    const connections = await getPlayersConnections(game)
+    const connections = game.players.map(player => player.connectionId)
 
-    wsManager.sendToAll(connections.flat(), JSON.stringify({
-        action: "game/passTurn"
+    wsManager.sendToAll(connections, JSON.stringify({
+        action: "game.passTurn"
     }))
 }

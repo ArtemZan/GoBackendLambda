@@ -8,14 +8,12 @@ import { Game, Point, TEAM } from "../../types";
 import { createWSManager } from "utils/ws";
 import { findRemovedPieces, pointToIndex } from "./findRemovedPieces";
 import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
-import * as jwt from "jsonwebtoken";
 
 const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production")
 
-export async function handler(event: APIGatewayEvent, context: Context) {
+export async function handler(event: APIGatewayEvent) {
     const body = JSON.parse(event.body)
-
-    const JWT = jwt.decode(context.clientContext?.Custom?.JWT) as jwt.JwtPayload
+    const connectionId = event.requestContext?.connectionId
 
     const game = await getGame(body.gameId)
 
@@ -23,7 +21,7 @@ export async function handler(event: APIGatewayEvent, context: Context) {
         return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
     }
 
-    const { isSuicide, updatedGame } = placePiece(game, JWT.id, body.position)
+    const { isSuicide, updatedGame } = placePiece(game, connectionId, body.position)
 
     if (isSuicide) {
         return {
@@ -39,11 +37,11 @@ export async function handler(event: APIGatewayEvent, context: Context) {
     await notifyPlayers(updatedGame)
 }
 
-function placePiece(game: Game, userId: string, position: Point) {
+function placePiece(game: Game, connectionId: string, position: Point) {
 
     const index = pointToIndex(position)
 
-    const team = game.players.find(p => p.id === userId)?.team
+    const team = game.players.find(p => p.connectionId === connectionId)?.team
 
     const {
         isSuicide,
@@ -61,7 +59,7 @@ function placePiece(game: Game, userId: string, position: Point) {
         players: game.players.map(player => {
             const updatedPieces = removedPieces?.length ? player.pieces.filter(index => !removedPieces[index]) : player.pieces
 
-            if (player.id === userId) {
+            if (player.connectionId === connectionId) {
                 updatedPieces.push(index)
             }
 
@@ -100,7 +98,7 @@ async function updateGame(updatedGame: Game) {
 async function notifyPlayers(updatedGame: Game) {
 
     try {
-        const connections = await Promise.all(updatedGame.players.map(player => getUserConnections(player.id)))
+        const connections = await Promise.all(updatedGame.players.map(player => player.connectionId))
 
         wsManager.sendToAll(connections.flat(), JSON.stringify({
             action: "game/passTurn",

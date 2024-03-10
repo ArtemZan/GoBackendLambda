@@ -31,6 +31,6 @@ export async function getGame(id: string): Promise<Game>{
     }
 }
 
-export async function getPlayersConnections(game: Game){
-    return Promise.all(game.players.map(player => getUserConnections(player.id)))
-}
+// export async function getPlayersConnections(game: Game){
+//     return Promise.all(game.players.map(player => getUserConnections(player.id)))
+// }
