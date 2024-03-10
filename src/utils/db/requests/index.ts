@@ -37,7 +37,7 @@ export async function getUserById(id: string){
 
         console.log("Got user by id: ", resp.Item)
 
-        return unmarshall(resp.Item) as User
+        return resp.Item as User
     }
     catch (e) {
         console.log("Failed to get user by id: ", e)
