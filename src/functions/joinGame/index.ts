@@ -43,7 +43,7 @@ async function getConnnection(connectionId: string)
         const resp = await db.send(new GetCommand({
             TableName: TABLE_NAME.WS_CONNECTIONS,
             Key: {
-                connectionId
+                id: connectionId
             }
         }))
 
