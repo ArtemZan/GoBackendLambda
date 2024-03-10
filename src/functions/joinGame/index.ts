@@ -73,8 +73,8 @@ async function notifyPlayers(game: Game, player: User, playerConnectionId: strin
     await wsManager.send(playerConnectionId, JSON.stringify({
         action: "game.start",
         payload: {
-            team: playerDTO,
-            opponent
+            team: playerTeam,
+            opponent: opponentDTO
         }
     }))
 
@@ -82,7 +82,7 @@ async function notifyPlayers(game: Game, player: User, playerConnectionId: strin
         action: "game.start",
         payload: {
             team: opponentTeam,
-            opponent: opponentDTO
+            opponent: playerDTO
         }
     }))
 
