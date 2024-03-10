@@ -39,11 +39,11 @@ export function getBodyFromErrorCode(code: ValueOf<typeof ERROR_CODE>) {
 
 type SupportedStatus = 400 | 500 
 
-export function getResponseFromErrorCode(status: 500, code: ERROR_CODE_500): any;
-export function getResponseFromErrorCode(status: 400, code: ERROR_CODE_400): any;
-export function getResponseFromErrorCode(status: SupportedStatus, code: ValueOf<typeof ERROR_CODE>) {
+export function getResponseFromErrorCode(status: 500, code: ERROR_CODE_500, isWebsocket?: boolean): any;
+export function getResponseFromErrorCode(status: 400, code: ERROR_CODE_400, isWebsocket?: boolean): any;
+export function getResponseFromErrorCode(status: SupportedStatus, code: ValueOf<typeof ERROR_CODE>, isWebsocket: boolean = false) {
     return {
-        status: status,
+        [isWebsocket ? "statusCode" : "status"]: status,
         body: getBodyFromErrorCode(code)
     }
 }

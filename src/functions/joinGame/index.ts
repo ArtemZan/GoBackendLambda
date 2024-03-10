@@ -13,12 +13,14 @@ import { getTokenFromHeaders } from "utils/auth";
 const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production")
 
 export async function handler(event: APIGatewayEvent) {
-    const body = JSON.parse(event.body)
+    const body = JSON.parse(event.body)?.body
     const code = body?.code
 
     const connectionId = event.requestContext?.connectionId
 
     const game = await getGame(code)
+
+    console.log("Got game: ", game)
 
     if (!game) {
         return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
@@ -27,6 +29,8 @@ export async function handler(event: APIGatewayEvent) {
     const connection = await getConnnection(connectionId)
 
     const user = await getUserById(connection.userId)
+
+    console.log("Got user: ", user)
 
     const playerTeam: TEAM = Math.random() < 0.5 ? TEAM.BLACK : TEAM.WHITE
     const opponentTeam: TEAM = playerTeam === TEAM.BLACK ? TEAM.WHITE : TEAM.BLACK
@@ -37,9 +41,8 @@ export async function handler(event: APIGatewayEvent) {
 }
 
 
-async function getConnnection(connectionId: string)
-{
-    try{
+async function getConnnection(connectionId: string) {
+    try {
         const resp = await db.send(new GetCommand({
             TableName: TABLE_NAME.WS_CONNECTIONS,
             Key: {
@@ -49,8 +52,7 @@ async function getConnnection(connectionId: string)
 
         return resp.Item as Connection
     }
-    catch(e)
-    {
+    catch (e) {
         console.log("Failed to get connection: ", e)
     }
 }
