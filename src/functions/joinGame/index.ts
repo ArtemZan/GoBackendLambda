@@ -23,7 +23,7 @@ export async function handler(event: APIGatewayEvent) {
     console.log("Got game: ", game)
 
     if (!game) {
-        return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
+        return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE, true)
     }
 
     const connection = await getConnnection(connectionId)
@@ -38,6 +38,10 @@ export async function handler(event: APIGatewayEvent) {
     await updateGame(game, connectionId, playerTeam, opponentTeam)
 
     await notifyPlayers(game, user, connectionId, playerTeam, opponentTeam)
+
+    return {
+        statusCode: 200
+    }
 }
 
 
@@ -63,10 +67,13 @@ async function notifyPlayers(game: Game, player: User, playerConnectionId: strin
     const opponentConnection = await getConnnection(game.players[0].connectionId)
     const opponent = await getUserById(opponentConnection.userId);
 
+    const {password: _0, isEmailVerified: _2, id: _4, email: _6, ...playerDTO} = player
+    const {password: _1, isEmailVerified: _3, id: _5, email: _7, ...opponentDTO} = opponent
+
     await wsManager.send(playerConnectionId, JSON.stringify({
         action: "game.start",
         payload: {
-            team: playerTeam,
+            team: playerDTO,
             opponent
         }
     }))
@@ -75,7 +82,7 @@ async function notifyPlayers(game: Game, player: User, playerConnectionId: strin
         action: "game.start",
         payload: {
             team: opponentTeam,
-            opponent: player
+            opponent: opponentDTO
         }
     }))
 
