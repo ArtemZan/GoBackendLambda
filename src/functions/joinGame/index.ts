@@ -24,8 +24,9 @@ export async function handler(event: APIGatewayEvent) {
         return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
     }
 
-    const parsedJWT = getTokenFromHeaders(event.headers)
-    const user = await getUserByEmail(parsedJWT.email)
+    const connection = await getConnnection(connectionId)
+
+    const user = await getUserById(connection.userId)
 
     const playerTeam: TEAM = Math.random() < 0.5 ? TEAM.BLACK : TEAM.WHITE
     const opponentTeam: TEAM = playerTeam === TEAM.BLACK ? TEAM.WHITE : TEAM.BLACK
@@ -36,15 +37,17 @@ export async function handler(event: APIGatewayEvent) {
 }
 
 
-async function getConnnection(connectionId)
+async function getConnnection(connectionId: string)
 {
     try{
-        return await db.send(new GetCommand({
+        const resp = await db.send(new GetCommand({
             TableName: TABLE_NAME.WS_CONNECTIONS,
             Key: {
                 connectionId
             }
         }))
+
+        return resp.Item as Connection
     }
     catch(e)
     {
@@ -55,7 +58,7 @@ async function getConnnection(connectionId)
 async function notifyPlayers(game: Game, player: User, playerConnectionId: string, playerTeam: TEAM, opponentTeam: TEAM) {
 
     console.log("Notify players: ", game, playerConnectionId, playerTeam, opponentTeam)
-    const opponentConnection = await getConnnection(game.players[0].connectionId) as unknown as Connection
+    const opponentConnection = await getConnnection(game.players[0].connectionId)
     const opponent = await getUserById(opponentConnection.userId);
 
     await wsManager.send(playerConnectionId, JSON.stringify({

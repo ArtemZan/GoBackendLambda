@@ -19,7 +19,7 @@ export async function handler(event: APIGatewayEvent){
     }
 
     return {
-        status: 200,
+        statusCode: 200,
         body: JSON.stringify({
             code: gameId
         })
