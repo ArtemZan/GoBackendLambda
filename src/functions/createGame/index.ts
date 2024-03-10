@@ -8,16 +8,9 @@ import { v4 as UUID } from "uuid"
 import { TEAM } from "../../types";
 
 export async function handler(event: APIGatewayEvent){
-    const jwt = getTokenFromHeaders(event.headers)
+    const connectionId = event.requestContext.connectionId
 
-    const user = await getUserByEmail(jwt.email)
-
-    if(!user){
-        console.log("Invalid email")
-        return
-    }
-
-    const gameId = await createGame(user.id)
+    const gameId = await createGame(connectionId)
 
     console.log("Created game id: ", gameId);
 
@@ -34,7 +27,7 @@ export async function handler(event: APIGatewayEvent){
 }
 
 
-async function createGame(userId: string){
+async function createGame(connectionId: string){
     const gameId = UUID()
 
     try{
@@ -44,7 +37,7 @@ async function createGame(userId: string){
                 id: gameId,
                 players: JSON.stringify([
                     {
-                        id: userId
+                        connectionId: connectionId
                     }
                 ]),
                 // Black always begin

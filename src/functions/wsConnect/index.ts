@@ -14,14 +14,11 @@ export async function handler(event: APIGatewayEvent, context: Context) {
 
     let parsedJWT: jwt.JwtPayload
 
-    const JWT = event.queryStringParameters
-    console.log(JWT)
-    context.clientContext = context.clientContext || {} as any
-    context.clientContext.Custom = context.clientContext.Custom || {}
-    context.clientContext.Custom.JWT = JWT
+    const queryParams = event.queryStringParameters
+    console.log(queryParams)
 
     try {
-        parsedJWT = jwt.decode(event.queryStringParameters.JWT) as jwt.JwtPayload
+        parsedJWT = jwt.decode(queryParams.JWT) as jwt.JwtPayload
     }
     catch (e) {
         console.log(e)

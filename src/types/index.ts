@@ -13,7 +13,7 @@ export type User = {
 }
 
 export type Player = {
-    id: string
+    connectionId: string
     pieces: number[]
     team: TEAM
     timeOut: number

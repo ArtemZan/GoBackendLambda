@@ -4,7 +4,7 @@ import { TABLE_NAME, db } from "utils/db";
 import { unmarshall } from "@aws-sdk/util-dynamodb"
 import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
 import { getUserByEmail, getUserById, getUserConnections as getUserWSConnections } from "utils/db/requests";
-import { Game, TEAM, User } from "../../types";
+import { Connection, Game, TEAM, User } from "../../types";
 import { createWSManager } from "utils/ws";
 import jwt from "jsonwebtoken";
 import { getGame } from "utils/db/requests/game";
@@ -15,6 +15,8 @@ const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.ama
 export async function handler(event: APIGatewayEvent) {
     const body = JSON.parse(event.body)
     const code = body?.code
+
+    const connectionId = event.requestContext?.connectionId
 
     const game = await getGame(code)
 
@@ -28,32 +30,44 @@ export async function handler(event: APIGatewayEvent) {
     const playerTeam: TEAM = Math.random() < 0.5 ? TEAM.BLACK : TEAM.WHITE
     const opponentTeam: TEAM = playerTeam === TEAM.BLACK ? TEAM.WHITE : TEAM.BLACK
 
-    await updateGame(game, user.id, playerTeam, opponentTeam)
+    await updateGame(game, connectionId, playerTeam, opponentTeam)
 
-    await notifyPlayers(game, user, playerTeam, opponentTeam)
+    await notifyPlayers(game, user, connectionId, playerTeam, opponentTeam)
 }
 
 
+async function getConnnection(connectionId)
+{
+    try{
+        return await db.send(new GetCommand({
+            TableName: TABLE_NAME.WS_CONNECTIONS,
+            Key: {
+                connectionId
+            }
+        }))
+    }
+    catch(e)
+    {
+        console.log("Failed to get connection: ", e)
+    }
+}
 
+async function notifyPlayers(game: Game, player: User, playerConnectionId: string, playerTeam: TEAM, opponentTeam: TEAM) {
 
-async function notifyPlayers(game: Game, player: User, playerTeam: TEAM, opponentTeam: TEAM) {
+    console.log("Notify players: ", game, playerConnectionId, playerTeam, opponentTeam)
+    const opponentConnection = await getConnnection(game.players[0].connectionId) as unknown as Connection
+    const opponent = await getUserById(opponentConnection.userId);
 
-    console.log("Notify players: ", game, player, playerTeam, opponentTeam)
-    const playerWSConnections = await getUserWSConnections(player.id)
-    const opponentWSConnections = await getUserWSConnections(game.players[0].id)
-
-    const opponent = await getUserById(game.players[0].id)
-
-    await wsManager.sendToAll(playerWSConnections, JSON.stringify({
-        action: "game/start",
+    await wsManager.send(playerConnectionId, JSON.stringify({
+        action: "game.start",
         payload: {
             team: playerTeam,
             opponent
         }
     }))
 
-    await wsManager.sendToAll(opponentWSConnections, JSON.stringify({
-        action: "game/start",
+    await wsManager.send(game.players[0].connectionId, JSON.stringify({
+        action: "game.start",
         payload: {
             team: opponentTeam,
             opponent: player
@@ -63,7 +77,7 @@ async function notifyPlayers(game: Game, player: User, playerTeam: TEAM, opponen
     console.log("Sent all connections")
 }
 
-async function updateGame(game: Game, newPlayerId: string, playerTeam: TEAM, opponentTeam: TEAM) {
+async function updateGame(game: Game, connectionId: string, playerTeam: TEAM, opponentTeam: TEAM) {
     try {
         const player = {
             ...game.players[0],
@@ -71,7 +85,7 @@ async function updateGame(game: Game, newPlayerId: string, playerTeam: TEAM, opp
         }
 
         const opponent = {
-            id: newPlayerId,
+            id: connectionId,
             team: opponentTeam
         }
 
