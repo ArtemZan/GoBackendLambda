@@ -62,7 +62,7 @@ function placePiece(game: Game, connectionId: string, position: Point) {
     const updatedGame: Game = {
         ...game,
         players: game.players.map(player => {
-            const updatedPieces = removedPieces?.length ? player.pieces.filter(index => !removedPieces[index]) : player.pieces
+            const updatedPieces = (removedPieces?.length ? player.pieces.filter(index => !removedPieces[index]) : player.pieces) || []
 
             if (player.connectionId === connectionId) {
                 updatedPieces.push(index)
