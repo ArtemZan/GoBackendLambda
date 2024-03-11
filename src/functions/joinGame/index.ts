@@ -97,7 +97,7 @@ async function updateGame(game: Game, connectionId: string, playerTeam: TEAM, op
         }
 
         const opponent = {
-            id: connectionId,
+            connectionId,
             team: opponentTeam
         }
 

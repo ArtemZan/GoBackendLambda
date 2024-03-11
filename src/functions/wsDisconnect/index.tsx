@@ -1,5 +1,6 @@
 import { ScanCommand } from "@aws-sdk/client-dynamodb";
 import { DeleteCommand } from "@aws-sdk/lib-dynamodb";
+import { unmarshall } from "@aws-sdk/util-dynamodb";
 import { APIGatewayEvent } from "aws-lambda";
 import { TABLE_NAME, db } from "utils/db";
 
@@ -30,7 +31,7 @@ export async function handler(event: APIGatewayEvent) {
 async function deleteGame(connectionId: string)
 {
     try {
-        const games = await db.send(new ScanCommand({
+        const resp = await db.send(new ScanCommand({
             TableName: TABLE_NAME.GAMES,
             FilterExpression: "contains(players, :searched_string)",
             ExpressionAttributeValues: {
@@ -40,7 +41,18 @@ async function deleteGame(connectionId: string)
             }
         }))
 
-        console.log("Found games for deletion: ", games)
+        console.log("Found games for deletion: ", resp)
+
+        for(const game of resp.Items)
+        {
+            const gameObject = unmarshall(game)
+            await db.send(new DeleteCommand({
+                TableName: TABLE_NAME.GAMES,
+                Key: {
+                    id: gameObject.id
+                }
+            }))
+        }
     }
     catch(e)
     {
