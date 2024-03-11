@@ -22,4 +22,8 @@ export async function handler(event: APIGatewayEvent) {
     await wsManager.send(opponent.connectionId, JSON.stringify({
         action: "game/giveUp"
     }))
+
+    return {
+        statusCode: 200
+    }
 }

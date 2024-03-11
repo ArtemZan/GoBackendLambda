@@ -38,6 +38,10 @@ export async function handler(event: APIGatewayEvent) {
     await updateGame(updatedGame)
 
     await notifyPlayers(updatedGame)
+
+    return {
+        statusCode: 200
+    }
 }
 
 function placePiece(game: Game, connectionId: string, position: Point) {
@@ -101,6 +105,7 @@ async function updateGame(updatedGame: Game) {
 }
 
 async function notifyPlayers(updatedGame: Game) {
+    console.log("")
 
     try {
         const connections = updatedGame.players.map(player => player.connectionId)

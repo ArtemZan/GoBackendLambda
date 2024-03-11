@@ -20,6 +20,10 @@ export async function handler(event: APIGatewayEvent){
     await updateGame(game)
 
     await notifyPlayers(game)
+
+    return {
+        statusCode: 200
+    }
 }
 
 async function updateGame(game: Game){
