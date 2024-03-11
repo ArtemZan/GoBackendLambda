@@ -90,7 +90,7 @@ async function updateGame(updatedGame: Game) {
             },
             AttributeUpdates: {
                 players: {
-                    Value: updatedGame.players
+                    Value: JSON.stringify(updatedGame.players)
                 }
             }
         }))
@@ -106,7 +106,7 @@ async function notifyPlayers(updatedGame: Game) {
         const connections = updatedGame.players.map(player => player.connectionId)
 
         wsManager.sendToAll(connections, JSON.stringify({
-            action: "game/passTurn",
+            action: "game.placePiece",
             body: updatedGame
         }))
     }

@@ -1,8 +1,8 @@
 import { Game, Point, TEAM } from "../../types"
 
 // To do: get the actual board size.
-const boardWidth = 13
-const boardHeight = 13
+const boardWidth = 19
+const boardHeight = 19
 
 export function pointToIndex(point: Point) {
     return point.y * boardWidth + point.x
