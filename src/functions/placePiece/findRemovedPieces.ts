@@ -24,7 +24,7 @@ function getBoard(game: Game) {
     const board: BoardMap = new Array(boardHeight * boardWidth)
 
     game.players.forEach(player =>
-        player.pieces.forEach(piece =>
+        player.pieces?.forEach(piece =>
             board[piece] = {
                 team: player.team,
                 isChecked: false

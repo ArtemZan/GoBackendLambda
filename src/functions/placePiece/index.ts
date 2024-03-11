@@ -103,9 +103,9 @@ async function updateGame(updatedGame: Game) {
 async function notifyPlayers(updatedGame: Game) {
 
     try {
-        const connections = await Promise.all(updatedGame.players.map(player => player.connectionId))
+        const connections = updatedGame.players.map(player => player.connectionId)
 
-        wsManager.sendToAll(connections.flat(), JSON.stringify({
+        wsManager.sendToAll(connections, JSON.stringify({
             action: "game/passTurn",
             body: updatedGame
         }))

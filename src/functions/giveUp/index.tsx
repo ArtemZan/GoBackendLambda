@@ -8,7 +8,7 @@ const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.ama
 
 export async function handler(event: APIGatewayEvent) {
     const connectionId = event.requestContext.connectionId
-    const body = JSON.parse(event.body)
+    const body = JSON.parse(event.body)?.body
     const gameId = body.gameId
     if(!gameId)
     {
