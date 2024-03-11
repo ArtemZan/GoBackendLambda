@@ -83,11 +83,11 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
             let leftmostX = x1
 
             // If the current x is not of the needed team, go to right
-            while (board[pointToIndex({ x: leftmostX, y })].team !== team) {
+            while (board[pointToIndex({ x: leftmostX, y })]?.team !== team) {
                 leftmostX++
             }
 
-            if (board[pointToIndex({ x: leftmostX, y })].isChecked) {
+            if (board[pointToIndex({ x: leftmostX, y })]?.isChecked) {
                 return {
                     isChecked: true
                 }
@@ -97,13 +97,13 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
             while (true) {
                 const piece = board[pointToIndex({ x: leftmostX, y })]
 
-                if (!piece.team) {
+                if (!piece?.team) {
                     return {
                         foundEmpty: true
                     }
                 }
 
-                if (piece.team !== team) {
+                if (piece?.team !== team) {
                     leftmostX++
                     break
                 }
@@ -129,7 +129,7 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
 
             let point: typeof board[0] = null
 
-            if (board[pointToIndex({ x, y })].isChecked) {
+            if (board[pointToIndex({ x, y })]?.isChecked) {
                 continue
             }
 
@@ -137,7 +137,7 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
             do {
                 x++
                 point = board[pointToIndex({ x, y })]
-                if (!point.team) {
+                if (!point?.team) {
                     return {
                         foundEmpty: true
                     }
