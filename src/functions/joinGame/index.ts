@@ -92,12 +92,12 @@ async function notifyPlayers(game: Game, player: User, playerConnectionId: strin
 async function updateGame(game: Game, connectionId: string, playerTeam: TEAM, opponentTeam: TEAM) {
     try {
         const player = {
-            ...game.players[0],
+            connectionId,
             team: playerTeam
         }
-
+        
         const opponent = {
-            connectionId,
+            ...game.players[0],
             team: opponentTeam
         }
 
