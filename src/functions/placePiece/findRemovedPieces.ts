@@ -43,7 +43,7 @@ type Span = {
 }
 
 function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
-    const team = board[pointToIndex(pointFromArea)].team
+    const team = board[pointToIndex(pointFromArea)]?.team
 
     if (!team) {
         return null
