@@ -193,20 +193,21 @@ export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
 
     const removedPieces = neighbours
         .map(position => isAreaSurrounded(board, position))
-        .reduce<boolean[]>((prev, current) => prev ?
-            current.isSurrounded ?
-                prev
+        .reduce<boolean[]>((prev, current) =>
+            current?.isSurrounded ?
+                prev ?
+                    current.area.map((isRemoved, index) => isRemoved || prev[index])
+                    :
+                    current.area
                 :
-                current.area.map((isRemoved, index) => isRemoved || prev[index])
-            :
-            current.area
+                prev
             , null)
 
 
     const { isSurrounded: isSuicide } = isAreaSurrounded(board, position)
 
     // Suicide doesn't take place, if some of the enemies pieces are killed
-    if(isSuicide && !removedPieces){
+    if (isSuicide && !removedPieces) {
         return {
             isSuicide: true
         }
