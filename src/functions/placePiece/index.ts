@@ -12,16 +12,19 @@ import { ERROR_CODE, getResponseFromErrorCode } from "utils/errors";
 const wsManager = createWSManager("https://ckgwnq8zq9.execute-api.eu-north-1.amazonaws.com/production")
 
 export async function handler(event: APIGatewayEvent) {
-    const body = JSON.parse(event.body)
+    const body = JSON.parse(event.body)?.body
     const connectionId = event.requestContext?.connectionId
 
+    console.log("Getting game by code: ", body.gameId)
     const game = await getGame(body.gameId)
+    console.log("Got game: ", game)
 
     if (!game) {
         return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
     }
 
     const { isSuicide, updatedGame } = placePiece(game, connectionId, body.position)
+    console.log("Placed a piece. Is a suicide: ", isSuicide, "updated game: ", updatedGame)
 
     if (isSuicide) {
         return {
@@ -47,6 +50,8 @@ function placePiece(game: Game, connectionId: string, position: Point) {
         isSuicide,
         removedPieces
     } = findRemovedPieces(game, position, team)
+
+    console.log("Found removed pieces. Is suicide: ", isSuicide, "removedPieces: ", removedPieces)
 
     if (isSuicide) {
         return {
