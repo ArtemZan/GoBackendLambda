@@ -110,7 +110,7 @@ async function notifyPlayers(updatedGame: Game) {
     try {
         const connections = updatedGame.players.map(player => player.connectionId)
 
-        wsManager.sendToAll(connections, JSON.stringify({
+        await wsManager.sendToAll(connections, JSON.stringify({
             action: "game.placePiece",
             body: updatedGame
         }))
