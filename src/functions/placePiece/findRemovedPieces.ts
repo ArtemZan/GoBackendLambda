@@ -46,7 +46,9 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
     const team = board[pointToIndex(pointFromArea)]?.team
 
     if (!team) {
-        return null
+        return {
+            isSurrounded: false
+        }
     }
 
     const spans: Span[] = [

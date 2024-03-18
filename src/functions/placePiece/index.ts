@@ -65,6 +65,7 @@ function placePiece(game: Game, connectionId: string, position: Point) {
 
     const updatedGame: Game = {
         ...game,
+        teamOnMove: game.teamOnMove === TEAM.BLACK ? TEAM.WHITE : TEAM.BLACK,
         players: game.players.map(player => {
             const updatedPieces = (removedPieces?.length ? player.pieces.filter(index => !removedPieces[index]) : player.pieces) || []
 
@@ -95,6 +96,9 @@ async function updateGame(updatedGame: Game) {
             AttributeUpdates: {
                 players: {
                     Value: JSON.stringify(updatedGame.players)
+                },
+                teamOnMove: {
+                    Value: updatedGame.teamOnMove
                 }
             }
         }))
