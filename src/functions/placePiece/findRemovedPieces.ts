@@ -81,8 +81,7 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
     }
 
     function checkRowForSpans({ x1, x2, y, dy }: Span) {
-        if(y < 0 || y >= boardHeight || x1 < 0 || x1 >= boardWidth)
-        {
+        if (y < 0 || y >= boardHeight || x1 < 0 || x1 >= boardWidth) {
             return {
                 foundEmpty: false
             }
@@ -96,15 +95,17 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
             console.log("Find the leftmost")
 
             // If the current x is not of the needed team, go to right
-            while (board[pointToIndex({ x: leftmostX, y })]?.team !== team) {
-                if(leftmostX >= boardWidth - 1 || leftmostX >= x2)
-                {
-                    return {
-                        foundEmpty: false
-                    }
+            let point: typeof board[0] = board[pointToIndex({ x: leftmostX, y })]
+            while (point?.team !== team) {
+                point = board[pointToIndex({ x: leftmostX, y })]
+                if (!point?.team) {
+                    return { foundEmpty: true }
+                }
+                if (leftmostX >= boardWidth - 1 || leftmostX >= x2) {
+                    return { foundEmpty: false }
                 }
                 leftmostX++
-            }
+            } 
 
             console.log("The leftmost: ", leftmostX)
 
@@ -175,6 +176,7 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
                 }
             }
             while (point.team === team)
+            x--
 
             console.log("The rightmost: ", x)
 
@@ -211,8 +213,7 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
 export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
     const board = getBoard(game)
 
-    if(board[pointToIndex(position)]?.team)
-    {
+    if (board[pointToIndex(position)]?.team) {
         return {
             isCellUsed: true
         }
