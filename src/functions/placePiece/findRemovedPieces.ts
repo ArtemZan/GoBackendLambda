@@ -81,7 +81,7 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
     }
 
     function checkRowForSpans({ x1, x2, y, dy }: Span) {
-        if(y < 0 || y >= boardHeight || x1 < 0 || x1 >= boardWidth || board[pointToIndex({ x: x1, y })].team !== team)
+        if(y < 0 || y >= boardHeight || x1 < 0 || x1 >= boardWidth)
         {
             return {
                 foundEmpty: false
@@ -96,7 +96,13 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
             console.log("Find the leftmost")
 
             // If the current x is not of the needed team, go to right
-            while (leftmostX < boardWidth - 1 && board[pointToIndex({ x: leftmostX, y })]?.team !== team) {
+            while (board[pointToIndex({ x: leftmostX, y })]?.team !== team) {
+                if(leftmostX >= boardWidth - 1 || leftmostX >= x2)
+                {
+                    return {
+                        foundEmpty: false
+                    }
+                }
                 leftmostX++
             }
 
@@ -148,9 +154,11 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
 
             let point: typeof board[0] = null
 
-            console.log("Is checked: ", board[pointToIndex({ x, y })]?.isChecked)
+            const spanStartPoint = board[pointToIndex({ x, y })]
 
-            if (board[pointToIndex({ x, y })]?.isChecked) {
+            console.log("Is checked: ", spanStartPoint?.isChecked)
+
+            if (spanStartPoint?.isChecked || (spanStartPoint?.team && spanStartPoint?.team !== team)) {
                 continue
             }
 
