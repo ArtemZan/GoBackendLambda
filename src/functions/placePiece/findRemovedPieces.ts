@@ -77,7 +77,10 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
             }
         }
 
-        spans.push(...rowSpansSearchResult.spans)
+        if(rowSpansSearchResult.spans)
+        {
+            spans.push(...rowSpansSearchResult.spans)
+        }
     }
 
     function checkRowForSpans({ x1, x2, y, dy }: Span) {
