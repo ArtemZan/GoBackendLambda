@@ -20,7 +20,7 @@ type BoardMap = {
     team?: TEAM
 }[]
 
-function getBoard(game: Game) {
+export function getBoard(game: Game) {
     const board: BoardMap = new Array(boardHeight * boardWidth)
 
     game.players.forEach(player =>
@@ -42,7 +42,7 @@ type Span = {
     dy: 1 | -1
 }
 
-function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
+export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
     const team = board[pointToIndex(pointFromArea)]?.team
 
     if (!team) {
@@ -68,8 +68,10 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
 
     while (spans.length) {
         const span = spans.pop()
+        console.log("Check span: ", span)
         const rowSpansSearchResult = checkRowForSpans(span)
         if (rowSpansSearchResult.foundEmpty) {
+            console.log("Not surrounded")
             return {
                 isSurrounded: false
             }
@@ -79,21 +81,34 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
     }
 
     function checkRowForSpans({ x1, x2, y, dy }: Span) {
+        if(y < 0 || y >= boardHeight || x1 < 0 || x1 >= boardWidth || board[pointToIndex({ x: x1, y })].team !== team)
+        {
+            return {
+                foundEmpty: false
+            }
+        }
+
         const spans: Span[] = []
 
         function getLeftmostPoint() {
             let leftmostX = x1
 
+            console.log("Find the leftmost")
+
             // If the current x is not of the needed team, go to right
-            while (board[pointToIndex({ x: leftmostX, y })]?.team !== team) {
+            while (leftmostX < boardWidth - 1 && board[pointToIndex({ x: leftmostX, y })]?.team !== team) {
                 leftmostX++
             }
+
+            console.log("The leftmost: ", leftmostX)
 
             if (board[pointToIndex({ x: leftmostX, y })]?.isChecked) {
                 return {
                     isChecked: true
                 }
             }
+
+            console.log("Go to the left until the opponent piece is encountered")
 
             // Go to the left until the opponent piece is encountered
             while (true) {
@@ -113,6 +128,8 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
                 leftmostX--;
             }
 
+            console.log("The actual leftmost point: ", leftmostX)
+
             return {
                 foundEmpty: false,
                 leftmostX
@@ -126,14 +143,18 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
             }
         }
 
-        for (let x = leftmostPointSearchResult.leftmostX; x < x2; x++) {
+        for (let x = leftmostPointSearchResult.leftmostX; x <= x2; x++) {
             const spanStart = x
 
             let point: typeof board[0] = null
 
+            console.log("Is checked: ", board[pointToIndex({ x, y })]?.isChecked)
+
             if (board[pointToIndex({ x, y })]?.isChecked) {
                 continue
             }
+
+            console.log("Go to the right, until an obstacle is encountered")
 
             // Go to the right, until an obstacle is encountered
             do {
@@ -146,6 +167,8 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
                 }
             }
             while (point.team === team)
+
+            console.log("The rightmost: ", x)
 
             spans.push({
                 x1: spanStart,
