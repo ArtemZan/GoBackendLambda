@@ -23,7 +23,18 @@ export async function handler(event: APIGatewayEvent) {
         return getResponseFromErrorCode(400, ERROR_CODE.WRONG_CODE)
     }
 
-    const { isSuicide, updatedGame } = placePiece(game, connectionId, body.position)
+    const team = game.players.find(p => p.connectionId === connectionId)?.team
+
+    if (team !== game.teamOnMove) {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({
+                error: "It is not your turn. " + game.teamOnMove + " is on move now."
+            })
+        }
+    }
+
+    const { isSuicide, updatedGame } = placePiece(game, connectionId, body.position, team)
     console.log("Placed a piece. Is a suicide: ", isSuicide, "updated game: ", updatedGame)
 
     if (isSuicide) {
@@ -44,16 +55,15 @@ export async function handler(event: APIGatewayEvent) {
     }
 }
 
-function placePiece(game: Game, connectionId: string, position: Point) {
+function placePiece(game: Game, connectionId: string, position: Point, playerTeam: TEAM) {
 
     const index = pointToIndex(position)
 
-    const team = game.players.find(p => p.connectionId === connectionId)?.team
 
     const {
         isSuicide,
         removedPieces
-    } = findRemovedPieces(game, position, team)
+    } = findRemovedPieces(game, position, playerTeam)
 
     console.log("Found removed pieces. Is suicide: ", isSuicide, "removedPieces: ", removedPieces)
 
