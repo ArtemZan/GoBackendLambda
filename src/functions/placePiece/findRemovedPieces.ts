@@ -98,12 +98,15 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
             let point: typeof board[0] = board[pointToIndex({ x: leftmostX, y })]
             while (point?.team !== team) {
                 point = board[pointToIndex({ x: leftmostX, y })]
+
                 if (!point?.team) {
                     return { foundEmpty: true }
                 }
+
                 if (leftmostX >= boardWidth - 1 || leftmostX >= x2) {
                     return { foundEmpty: false }
                 }
+
                 leftmostX++
             } 
 
@@ -166,16 +169,22 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
             console.log("Go to the right, until an obstacle is encountered")
 
             // Go to the right, until an obstacle is encountered
-            do {
-                x++
+            while(true) {
                 point = board[pointToIndex({ x, y })]
                 if (!point?.team) {
                     return {
                         foundEmpty: true
                     }
                 }
+                
+                if(point.team !== team)
+                {
+                    break
+                }
+                
+                x++
+                point.isChecked = true
             }
-            while (point.team === team)
             x--
 
             console.log("The rightmost: ", x)
