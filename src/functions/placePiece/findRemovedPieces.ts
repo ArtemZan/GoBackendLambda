@@ -180,6 +180,13 @@ function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
 export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
     const board = getBoard(game)
 
+    if(board[pointToIndex(position)]?.team)
+    {
+        return {
+            isCellUsed: true
+        }
+    }
+
     board[pointToIndex(position)] = {
         team,
         isChecked: false

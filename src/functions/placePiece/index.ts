@@ -34,8 +34,18 @@ export async function handler(event: APIGatewayEvent) {
         }
     }
 
-    const { isSuicide, updatedGame } = placePiece(game, connectionId, body.position, team)
+    const { isSuicide, isCellUsed, updatedGame } = placePiece(game, connectionId, body.position, team)
     console.log("Placed a piece. Is a suicide: ", isSuicide, "updated game: ", updatedGame)
+
+    if(isCellUsed)
+    {
+        return {
+            statusCode: 400,
+            body: JSON.stringify({
+                error: "This position is already taken"
+            })
+        }
+    }
 
     if (isSuicide) {
         return {
@@ -62,8 +72,13 @@ function placePiece(game: Game, connectionId: string, position: Point, playerTea
 
     const {
         isSuicide,
+        isCellUsed,
         removedPieces
     } = findRemovedPieces(game, position, playerTeam)
+
+    if (isCellUsed) {
+        return { isCellUsed }
+    }
 
     console.log("Found removed pieces. Is suicide: ", isSuicide, "removedPieces: ", removedPieces)
 

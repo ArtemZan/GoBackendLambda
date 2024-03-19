@@ -20,7 +20,7 @@ export async function handler(event: APIGatewayEvent) {
     const opponent = game.players.find(player => player.connectionId !== connectionId)
 
     await wsManager.send(opponent.connectionId, JSON.stringify({
-        action: "game/giveUp"
+        action: "game.giveUp"
     }))
 
     return {
