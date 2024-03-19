@@ -96,6 +96,10 @@ function isAreaSurrounded(board, pointFromArea) {
             // Go to the left until the opponent piece is encountered
             while (true) {
                 var piece = board[pointToIndex({ x: leftmostX, y: y })];
+                if (leftmostX < 0) {
+                    leftmostX++;
+                    break;
+                }
                 if (!(piece === null || piece === void 0 ? void 0 : piece.team)) {
                     return {
                         foundEmpty: true

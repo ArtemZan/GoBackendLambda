@@ -73,3 +73,28 @@ console.log(board3)
 
 console.log(isAreaSurrounded(board3, {x: 1, y: 1}))
 //false
+
+
+const board4 = getBoard({
+    players: [
+        {
+            pieces: [1, 19],
+            team: TEAM.BLACK,
+            connectionId: "",
+            timeOut: 1
+        },
+        {
+            pieces: [0],
+            team: TEAM.WHITE,
+            connectionId: "",
+            timeOut: 1
+        }
+    ],
+    id: "",
+    teamOnMove: TEAM.WHITE
+})
+
+console.log(board4)
+
+console.log(isAreaSurrounded(board4, {x: 0, y: 0}))
+//true

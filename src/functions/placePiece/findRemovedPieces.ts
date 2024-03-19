@@ -123,6 +123,11 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
             // Go to the left until the opponent piece is encountered
             while (true) {
                 const piece = board[pointToIndex({ x: leftmostX, y })]
+                if(leftmostX < 0)
+                {
+                    leftmostX++
+                    break
+                }
 
                 if (!piece?.team) {
                     return {
