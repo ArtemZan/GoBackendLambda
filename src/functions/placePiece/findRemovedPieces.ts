@@ -43,7 +43,9 @@ type Span = {
 }
 
 export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
+    board = JSON.parse(JSON.stringify(board))
     const team = board[pointToIndex(pointFromArea)]?.team
+
 
     if (!team) {
         return {
@@ -219,7 +221,7 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
         }
     }
 
-    const areaMap = board.map(piece => piece.isChecked)
+    const areaMap = board.map(piece => piece?.isChecked)
 
     return {
         isSurrounded: true,
@@ -240,7 +242,6 @@ export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
         team,
         isChecked: false
     }
-
 
     const neighbours = [
         { x: position.x, y: position.y + 1 },
