@@ -46,6 +46,7 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
     board = JSON.parse(JSON.stringify(board))
     const team = board[pointToIndex(pointFromArea)]?.team
 
+    //console.log("Is point surrounded: ", pointFromArea)
 
     if (!team) {
         return {
@@ -68,19 +69,20 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
         }
     ]
 
+    //console.log("Spans: ", spans)
+
     while (spans.length) {
         const span = spans.pop()
-        console.log("Check span: ", span)
+        //console.log("Check span: ", span)
         const rowSpansSearchResult = checkRowForSpans(span)
         if (rowSpansSearchResult.foundEmpty) {
-            console.log("Not surrounded")
+            //console.log("Not surrounded")
             return {
                 isSurrounded: false
             }
         }
 
-        if(rowSpansSearchResult.spans)
-        {
+        if (rowSpansSearchResult.spans) {
             spans.push(...rowSpansSearchResult.spans)
         }
     }
@@ -97,12 +99,13 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
         function getLeftmostPoint() {
             let leftmostX = x1
 
-            console.log("Find the leftmost")
+            //console.log("Find the leftmost for team: ", team)
 
             // If the current x is not of the needed team, go to right
             let point: typeof board[0] = board[pointToIndex({ x: leftmostX, y })]
             while (point?.team !== team) {
                 point = board[pointToIndex({ x: leftmostX, y })]
+                //console.log("Check point: ", { x: leftmostX, y }, " - ", point)
 
                 if (!point?.team) {
                     return { foundEmpty: true }
@@ -113,9 +116,9 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
                 }
 
                 leftmostX++
-            } 
+            }
 
-            console.log("The leftmost: ", leftmostX)
+            //console.log("The leftmost: ", leftmostX)
 
             if (board[pointToIndex({ x: leftmostX, y })]?.isChecked) {
                 return {
@@ -123,13 +126,12 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
                 }
             }
 
-            console.log("Go to the left until the opponent piece is encountered")
+            //console.log("Go to the left until the opponent piece is encountered")
 
             // Go to the left until the opponent piece is encountered
             while (true) {
                 const piece = board[pointToIndex({ x: leftmostX, y })]
-                if(leftmostX < 0)
-                {
+                if (leftmostX < 0) {
                     leftmostX++
                     break
                 }
@@ -148,7 +150,7 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
                 leftmostX--;
             }
 
-            console.log("The actual leftmost point: ", leftmostX)
+            //console.log("The actual leftmost point: ", leftmostX)
 
             return {
                 foundEmpty: false,
@@ -170,50 +172,50 @@ export function isAreaSurrounded(board: BoardMap, pointFromArea: Point) {
 
             const spanStartPoint = board[pointToIndex({ x, y })]
 
-            console.log("Is checked: ", spanStartPoint?.isChecked)
+            //console.log("Is checked: ", spanStartPoint?.isChecked)
 
             if (spanStartPoint?.isChecked || (spanStartPoint?.team && spanStartPoint?.team !== team)) {
                 continue
             }
 
-            console.log("Go to the right, until an obstacle is encountered")
+            //console.log("Go to the right, until an obstacle is encountered")
 
             // Go to the right, until an obstacle is encountered
-            while(true) {
+            while (true) {
                 point = board[pointToIndex({ x, y })]
                 if (!point?.team) {
                     return {
                         foundEmpty: true
                     }
                 }
-                
-                if(point.team !== team)
-                {
+
+                if (point.team !== team) {
                     break
                 }
-                
+
                 x++
                 point.isChecked = true
             }
             x--
 
-            console.log("The rightmost: ", x)
+            //console.log("The rightmost: ", x)
 
             spans.push({
                 x1: spanStart,
                 x2: x,
                 y: y + dy,
                 dy
+            },
+            {
+                x1: spanStart,
+                x2: x,
+                y: y - dy,
+                dy: -dy as (1 | -1)
             })
 
-            if (x > x2 + 1) {
-                spans.push({
-                    x1: spanStart,
-                    x2: x,
-                    y: y - dy,
-                    dy: -dy as (1 | -1)
-                })
-            }
+            // if (x > x2 + 1) {
+            //     spans.push()
+            // }
         }
 
         return {
@@ -262,11 +264,13 @@ export function findRemovedPieces(game: Game, position: Point, team: TEAM) {
                 prev
             , null)
 
+    //console.log("Check is suicide on position:", position)
 
     const { isSurrounded: isSuicide } = isAreaSurrounded(board, position)
 
     // Suicide doesn't take place, if some of the enemies pieces are killed
     if (isSuicide && !removedPieces) {
+        //console.log("Suicide")
         return {
             isSuicide: true
         }
