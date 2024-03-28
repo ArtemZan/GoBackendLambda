@@ -8,5 +8,8 @@
         "paths": {
             "utils/*": ["./src/utils/*"]
         }
-    }
+    },
+    "include": [
+        "src"
+    ]
 }
